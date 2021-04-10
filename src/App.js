@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+// import 'fontsource-roboto'
+import './App.css'
+import React from 'react'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { createMuiTheme } from '@material-ui/core/styles'
+import { ThemeProvider } from '@material-ui/styles'
+import Login from './screens/Login'
+import Signup from './screens/Signup'
+import Dashboard from './screens/Dashboard'
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#4dabf5',
+      main: '#2196f3',
+      dark: '#1769aa',
+      contrastText: '#fff',
+    },
+    secondary: {
+      light: '#f73378',
+      main: '#f50057',
+      dark: '#ab003c',
+      contrastText: '#000',
+    },
+  },
+});
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <ThemeProvider theme={theme}>
+      <Router className="App">
+        <Route path='/signup' component={Signup} />
+        <Route path='/login' component={Login} />
+        <Route path='/' component={Dashboard} exact />
+      </Router>
+    </ThemeProvider>
+  )
 }
 
-export default App;
+export default App
