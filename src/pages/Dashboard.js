@@ -28,6 +28,9 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import EnergyMeterCard from '../components/EnergyMeterCard';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
+import { useHistory } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -116,46 +119,22 @@ const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
   },
+  fabStyle: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    marginBottom: theme.spacing(8),
+    marginRight: theme.spacing(8),
+  },
 }));
 
 function Dashboard() {
   const classes = useStyles();
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [openDrawer, setOpenDrawer] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
-  const isMenuOpen = Boolean(anchorEl);
-
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  };
-
-  const menuId = 'primary-search-account-menu';
-
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
+  const openAccountMenu = Boolean(anchorEl);
+  const history = useHistory();
 
   const [devices, setDevices] = useState([
     {
@@ -179,11 +158,24 @@ function Dashboard() {
   ]);
 
   const handleDrawerOpen = () => {
-    setOpen(true);
+    setOpenDrawer(true);
   };
 
   const handleDrawerClose = () => {
-    setOpen(false);
+    setOpenDrawer(false);
+  };
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    setAnchorEl(null);
+    history.replace('/login');
   };
 
   return (
@@ -191,7 +183,7 @@ function Dashboard() {
       <AppBar
         position='fixed'
         className={clsx(classes.appBar, {
-          [classes.appBarShift]: open,
+          [classes.appBarShift]: openDrawer,
         })}
       >
         <Toolbar>
@@ -201,7 +193,7 @@ function Dashboard() {
             onClick={handleDrawerOpen}
             edge='start'
             className={clsx(classes.menuButton, {
-              [classes.hide]: open,
+              [classes.hide]: openDrawer,
             })}
           >
             <MenuIcon />
@@ -211,34 +203,52 @@ function Dashboard() {
           </Typography>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <IconButton aria-label='show 17 new notifications' color='inherit'>
+            <IconButton aria-label='show new notifications' color='inherit'>
               <Badge badgeContent={1} color='secondary'>
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-            <IconButton
-              edge='end'
-              aria-label='account of current user'
-              aria-controls={menuId}
-              aria-haspopup='true'
-              onClick={handleProfileMenuOpen}
-              color='inherit'
-            >
-              <AccountCircle />
-            </IconButton>
+            <div>
+              <IconButton
+                edge='end'
+                aria-label='account of current user'
+                color='inherit'
+                onClick={handleMenu}
+              >
+                <AccountCircle />
+              </IconButton>
+              <Menu
+                id='menu-appbar'
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={openAccountMenu}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                <MenuItem onClick={handleLogout}>Log out</MenuItem>
+              </Menu>
+            </div>
           </div>
         </Toolbar>
       </AppBar>
       <Drawer
         variant='permanent'
         className={clsx(classes.drawer, {
-          [classes.drawerOpen]: open,
-          [classes.drawerClose]: !open,
+          [classes.drawerOpen]: openDrawer,
+          [classes.drawerClose]: !openDrawer,
         })}
         classes={{
           paper: clsx({
-            [classes.drawerOpen]: open,
-            [classes.drawerClose]: !open,
+            [classes.drawerOpen]: openDrawer,
+            [classes.drawerClose]: !openDrawer,
           }),
         }}
       >
@@ -293,6 +303,9 @@ function Dashboard() {
             </Grid>
           ))}
         </Grid>
+        <Fab color='secondary' aria-label='add' className={classes.fabStyle}>
+          <AddIcon />
+        </Fab>
       </main>
     </div>
   );
