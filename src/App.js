@@ -1,6 +1,6 @@
 // import 'fontsource-roboto'
 import './App.css';
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
@@ -9,6 +9,7 @@ import SignupPage from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import { blue, deepOrange } from '@material-ui/core/colors';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import AuthContext from './store/auth-context';
 
 const theme = createMuiTheme({
   palette: {
@@ -18,14 +19,14 @@ const theme = createMuiTheme({
 });
 
 function App() {
-  const [login, setLogin] = useState(true);
+  const authContext = useContext(AuthContext);
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Switch>
         <Route path='/' exact>
-          {login ? <Dashboard /> : <LoginPage />}
+          <Dashboard />
         </Route>
         <Route path='/login'>
           <LoginPage />

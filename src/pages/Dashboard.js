@@ -5,7 +5,6 @@ import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
@@ -15,14 +14,8 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
-import DesktopMacIcon from '@material-ui/icons/DesktopMac';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import AssessmentIcon from '@material-ui/icons/Assessment';
-import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -31,6 +24,9 @@ import EnergyMeterCard from '../components/EnergyMeterCard';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import { useHistory } from 'react-router-dom';
+import DesktopMacIcon from '@material-ui/icons/DesktopMac';
+import AssessmentIcon from '@material-ui/icons/Assessment';
+import { TextField } from '@material-ui/core';
 
 const drawerWidth = 240;
 
@@ -111,10 +107,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
   },
   sectionDesktop: {
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'flex',
-    },
+    // display: 'none',
+    // [theme.breakpoints.up('md')]: {
+    //   display: 'flex',
+    // },
+    display: 'flex',
   },
   grow: {
     flexGrow: 1,
@@ -146,13 +143,13 @@ function Dashboard() {
     {
       id: 2,
       name: 'Energy Meter 2',
-      added: 'Added 1 months ago',
+      added: 'Added 1 month ago',
       type: 'Energy meter',
     },
     {
       id: 3,
       name: 'Energy Meter 3',
-      added: 'Added 1 months ago',
+      added: 'Added 1 month ago',
       type: 'Energy meter',
     },
   ]);
@@ -175,6 +172,7 @@ function Dashboard() {
 
   const handleLogout = () => {
     setAnchorEl(null);
+    localStorage.removeItem('token');
     history.replace('/login');
   };
 
@@ -297,9 +295,7 @@ function Dashboard() {
                 deviceName={device.name}
                 deviceAdded={device.added}
                 deviceType={device.type}
-              >
-                {device.name}
-              </EnergyMeterCard>
+              />
             </Grid>
           ))}
         </Grid>
