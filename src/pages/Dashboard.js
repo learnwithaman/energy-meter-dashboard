@@ -27,6 +27,10 @@ import { useHistory } from 'react-router-dom';
 import DesktopMacIcon from '@material-ui/icons/DesktopMac';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import { TextField } from '@material-ui/core';
+import Modal from '@material-ui/core/Modal';
+import AddDevice from '../components/AddDeviceModal';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import AppsIcon from '@material-ui/icons/Apps';
 
 const drawerWidth = 240;
 
@@ -123,6 +127,16 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(8),
     marginRight: theme.spacing(8),
   },
+  expandMoreIconButtonStyle: {
+    marginLeft: theme.spacing(0.5),
+  },
+  userNotificationIconButtonStyle: {
+    marginRight: theme.spacing(2),
+  },
+  companyNameStyle: {
+    marginRight: 'auto',
+    marginLeft: theme.spacing(2),
+  },
 }));
 
 function Dashboard() {
@@ -130,8 +144,11 @@ function Dashboard() {
   const theme = useTheme();
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [openAddDeviceModal, setAddDeviceModal] = React.useState(false);
   const openAccountMenu = Boolean(anchorEl);
   const history = useHistory();
+
+  const username = localStorage.getItem('username', 'Admin');
 
   const [devices, setDevices] = useState([
     {
@@ -173,7 +190,17 @@ function Dashboard() {
   const handleLogout = () => {
     setAnchorEl(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('userId');
     history.replace('/login');
+  };
+
+  const fabHandler = () => {
+    setAddDeviceModal(true);
+  };
+
+  const handleAddDeviceModalClose = () => {
+    setAddDeviceModal(false);
   };
 
   return (
@@ -201,20 +228,34 @@ function Dashboard() {
           </Typography>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <IconButton aria-label='show new notifications' color='inherit'>
-              <Badge badgeContent={1} color='secondary'>
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
             <div>
-              <IconButton
-                edge='end'
-                aria-label='account of current user'
-                color='inherit'
-                onClick={handleMenu}
+              <Grid
+                container
+                direction='row'
+                justify='center'
+                alignItems='center'
               >
-                <AccountCircle />
-              </IconButton>
+                {/* <IconButton
+                  aria-label='show new notifications'
+                  color='inherit'
+                  className={classes.userNotificationIconButtonStyle}
+                >
+                  <Badge badgeContent={1} color='secondary'>
+                    <NotificationsIcon />
+                  </Badge>
+                </IconButton> */}
+                <Typography>{username}</Typography>
+                <IconButton
+                  edge='end'
+                  aria-label='expand more icon button'
+                  color='inherit'
+                  onClick={handleMenu}
+                  size='small'
+                  className={classes.expandMoreIconButtonStyle}
+                >
+                  <ExpandMoreIcon />
+                </IconButton>
+              </Grid>
               <Menu
                 id='menu-appbar'
                 anchorEl={anchorEl}
@@ -251,6 +292,8 @@ function Dashboard() {
         }}
       >
         <div className={classes.toolbar}>
+          {/* <AppsIcon /> */}
+          <Typography className={classes.companyNameStyle}>I/O</Typography>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'rtl' ? (
               <ChevronRightIcon />
@@ -299,10 +342,23 @@ function Dashboard() {
             </Grid>
           ))}
         </Grid>
-        <Fab color='secondary' aria-label='add' className={classes.fabStyle}>
+        <Fab
+          color='secondary'
+          aria-label='add'
+          className={classes.fabStyle}
+          onClick={fabHandler}
+        >
           <AddIcon />
         </Fab>
       </main>
+      <Modal
+        open={openAddDeviceModal}
+        onClose={handleAddDeviceModalClose}
+        aria-labelledby='add-device-modal'
+        aria-describedby='add-device'
+      >
+        <AddDevice onCancel={handleAddDeviceModalClose} />
+      </Modal>
     </div>
   );
 }

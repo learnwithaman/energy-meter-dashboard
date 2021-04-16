@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import { blue, deepOrange } from '@material-ui/core/colors';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AuthContext from './store/auth-context';
+import AddDevice from './components/AddDeviceModal';
 
 const theme = createMuiTheme({
   palette: {
@@ -33,6 +34,9 @@ function App() {
         </Route>
         <Route path='/signup'>
           <SignupPage />
+        </Route>
+        <Route path='/device'>
+          <AddDevice />
         </Route>
       </Switch>
     </ThemeProvider>

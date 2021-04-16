@@ -83,6 +83,13 @@ function SignupPage() {
       .then((response) => {
         console.log(response.data);
         localStorage.setItem('token', response.data.jwtToken);
+        localStorage.setItem(
+          'username',
+          response.data.userDetails.firstname +
+            ' ' +
+            response.data.userDetails.lastname
+        );
+        localStorage.setItem('userId', response.data.userDetails.id);
         setSignupError(false);
         setOpenBackdrop(false);
         history.replace('/');
