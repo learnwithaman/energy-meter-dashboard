@@ -26,18 +26,16 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Switch>
-        <Route path='/' exact>
-          <Dashboard />
-        </Route>
         <Route path='/login'>
           <LoginPage />
         </Route>
         <Route path='/signup'>
           <SignupPage />
         </Route>
-        <Route path='/device'>
-          <AddDevice />
+        <Route exact path='/'>
+          <Dashboard />
         </Route>
+        <Route path='*' render={() => '404 NOT FOUND'} />
       </Switch>
     </ThemeProvider>
   );

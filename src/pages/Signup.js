@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -58,6 +58,14 @@ function SignupPage() {
 
   const history = useHistory();
 
+  const userToken = localStorage.getItem('userToken');
+
+  useEffect(() => {
+    if (userToken && userToken !== '') {
+      history.push('/');
+    }
+  }, [userToken, history]);
+
   const replaceWithLogin = (e) => {
     e.preventDefault();
     history.replace('/login');
@@ -82,7 +90,7 @@ function SignupPage() {
       })
       .then((response) => {
         console.log(response.data);
-        localStorage.setItem('token', response.data.jwtToken);
+        localStorage.setItem('userToken', response.data.jwtToken);
         localStorage.setItem(
           'username',
           response.data.userDetails.firstname +

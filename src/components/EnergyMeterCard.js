@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -28,7 +29,13 @@ const useStyles = makeStyles({
   starBorderIconButtonStyle: {},
 });
 
-function EnergyMeterCard({ deviceId, deviceName, deviceAdded, deviceType }) {
+function EnergyMeterCard({
+  deviceId,
+  deviceName,
+  deviceAdded,
+  deviceType,
+  onDeviceDelete,
+}) {
   const classes = useStyles();
 
   const [favorite, setFavorite] = useState(false);
@@ -36,6 +43,29 @@ function EnergyMeterCard({ deviceId, deviceName, deviceAdded, deviceType }) {
   function toggleFavorite() {
     setFavorite((prevFavorite) => !prevFavorite);
   }
+
+  const userToken = localStorage.getItem('userToken', '');
+
+  const handleDeviceDelete = () => {
+    const result = window.confirm('Are you sure?');
+    if (result) {
+      axios
+        .delete('http://52.15.213.150:5000/api/devices/' + deviceId, {
+          headers: {
+            'Content-Type': 'application/json',
+            jwtToken: userToken,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          onDeviceDelete();
+        })
+        .catch((error) => {
+          console.log(error.response.status);
+          console.log(error.response.data);
+        });
+    }
+  };
 
   return (
     <Card className={classes.root} elevation={6}>
@@ -81,7 +111,7 @@ function EnergyMeterCard({ deviceId, deviceName, deviceAdded, deviceType }) {
           <SettingsIcon fontSize='small' />
         </IconButton>
         <IconButton size='small'>
-          <DeleteIcon fontSize='small' />
+          <DeleteIcon fontSize='small' onClick={handleDeviceDelete} />
         </IconButton>
       </CardActions>
     </Card>

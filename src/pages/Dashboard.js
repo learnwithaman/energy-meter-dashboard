@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -31,6 +32,7 @@ import Modal from '@material-ui/core/Modal';
 import AddDevice from '../components/AddDeviceModal';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AppsIcon from '@material-ui/icons/Apps';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const drawerWidth = 240;
 
@@ -142,34 +144,52 @@ const useStyles = makeStyles((theme) => ({
 function Dashboard() {
   const classes = useStyles();
   const theme = useTheme();
+
+  const username = localStorage.getItem('username', 'Admin');
+  const userToken = localStorage.getItem('userToken');
+  const userId = localStorage.getItem('userId');
+
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openAddDeviceModal, setAddDeviceModal] = React.useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const openAccountMenu = Boolean(anchorEl);
+
   const history = useHistory();
 
-  const username = localStorage.getItem('username', 'Admin');
+  useEffect(() => {
+    if (!userToken || userToken === '') {
+      history.push('/login');
+    }
+  }, [userToken, history]);
 
-  const [devices, setDevices] = useState([
-    {
-      id: 1,
-      name: 'Energy Meter 1',
-      added: 'Added 2 months ago',
-      type: 'Energy meter',
-    },
-    {
-      id: 2,
-      name: 'Energy Meter 2',
-      added: 'Added 1 month ago',
-      type: 'Energy meter',
-    },
-    {
-      id: 3,
-      name: 'Energy Meter 3',
-      added: 'Added 1 month ago',
-      type: 'Energy meter',
-    },
-  ]);
+  const [devices, setDevices] = useState([]);
+
+  const getDevices = () => {
+    console.log(userId, userToken);
+    setIsLoading(true);
+    axios
+      .get('http://52.15.213.150:5000/api/devices/' + userId, {
+        headers: {
+          jwtToken: userToken,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        setDevices(response.data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log(error.response.status);
+        console.log(error.response.data);
+        setIsLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    getDevices();
+  }, []);
 
   const handleDrawerOpen = () => {
     setOpenDrawer(true);
@@ -189,7 +209,7 @@ function Dashboard() {
 
   const handleLogout = () => {
     setAnchorEl(null);
-    localStorage.removeItem('token');
+    localStorage.removeItem('userToken');
     localStorage.removeItem('username');
     localStorage.removeItem('userId');
     history.replace('/login');
@@ -201,6 +221,19 @@ function Dashboard() {
 
   const handleAddDeviceModalClose = () => {
     setAddDeviceModal(false);
+  };
+
+  const getCustomDate = (timestamp) => {
+    const date = new Date(Number(timestamp));
+    return date.toLocaleString();
+  };
+
+  const handleDeviceAdd = () => {
+    getDevices();
+  };
+
+  const handleDeviceDelete = () => {
+    getDevices();
   };
 
   return (
@@ -320,9 +353,17 @@ function Dashboard() {
         <div className={classes.toolbar} />
         <TextField
           id='searchDeviceTextField'
-          label='Search Device'
+          label='Search device'
           className={classes.textfield}
+          // onChange={(e) => {
+          //   let searchedDevice = devices.filter(
+          //     (device) => device.deviceName === e.target.value
+          //   );
+          //   console.log(e.target.value);
+          //   setDevices(searchedDevice[0]);
+          // }}
         />
+
         <Grid
           container
           direction='row'
@@ -331,17 +372,25 @@ function Dashboard() {
           spacing={4}
           className={classes.gridContainer}
         >
-          {devices.map((device) => (
-            <Grid item key={device.id}>
-              <EnergyMeterCard
-                deviceId={device.id}
-                deviceName={device.name}
-                deviceAdded={device.added}
-                deviceType={device.type}
-              />
+          {isLoading ? (
+            <Grid item>
+              <CircularProgress />
             </Grid>
-          ))}
+          ) : (
+            devices.map((device) => (
+              <Grid item key={device.id}>
+                <EnergyMeterCard
+                  deviceId={device.deviceid}
+                  deviceName={device.devicename}
+                  deviceAdded={getCustomDate(device.timestamp)}
+                  deviceType='Energy Meter'
+                  onDeviceDelete={handleDeviceDelete}
+                />
+              </Grid>
+            ))
+          )}
         </Grid>
+
         <Fab
           color='secondary'
           aria-label='add'
@@ -357,7 +406,10 @@ function Dashboard() {
         aria-labelledby='add-device-modal'
         aria-describedby='add-device'
       >
-        <AddDevice onCancel={handleAddDeviceModalClose} />
+        <AddDevice
+          onCancel={handleAddDeviceModalClose}
+          onDeviceAdd={handleDeviceAdd}
+        />
       </Modal>
     </div>
   );

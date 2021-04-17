@@ -1,7 +1,5 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-// import styles from './Login.module.css';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Link from '@material-ui/core/Link';
@@ -13,7 +11,6 @@ import Container from '@material-ui/core/Container';
 import { useHistory } from 'react-router-dom';
 import StickyFooter from './StickyFooter';
 import Alert from '@material-ui/lab/Alert';
-import AuthContext from '../store/auth-context';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Card from '@material-ui/core/Card';
@@ -25,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 'auto',
     marginRight: 'auto',
     marginTop: '25vh',
-    padding: theme.spacing(1),
+    padding: theme.spacing(0.5, 0.5, 0, 0.5),
     textAlign: 'center',
   },
   form: {
@@ -53,59 +50,59 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function AddDevice({ onCancel }) {
+function AddDevice({ onCancel, onDeviceAdd }) {
   const classes = useStyles();
 
-  const history = useHistory();
+  const deviceNameNum = Math.floor(Math.random() * 100);
+  const deviceIdNum1 = deviceNameNum;
+  const deviceIdNum2 = Math.floor(Math.random() * 10);
 
-  const [deviceName, setDeviceName] = useState('Energy Meter 1');
-  const [deviceId, setDeviceId] = useState('E0:152:24:D4');
-  const [addDeviceError, setAddDeviceError] = useState(false);
-  const [openBackdrop, setOpenBackdrop] = React.useState(false);
+  const deviceNamePlaceholder = 'Energy Meter ' + deviceNameNum;
+  const deviceIdPlaceholder = 'E0:152:' + deviceIdNum1 + ':D' + deviceIdNum2;
+
+  const [deviceName, setDeviceName] = useState(deviceNamePlaceholder);
+  const [deviceId, setDeviceId] = useState(deviceIdPlaceholder);
 
   const userId = localStorage.getItem('userId', '');
+  const userToken = localStorage.getItem('userToken', '');
 
-  // const authContext = useContext(AuthContext);
+  const [deviceAdded, setDeviceAdded] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const submitHandler = (e) => {
     e.preventDefault();
-    setAddDeviceError(false);
-    setOpenBackdrop(true);
-    // axios
-    //   .post('http://52.15.213.150:5000/api/devices', {
-    //     userId: userId,
-    //     deviceName: deviceName,
-    //     deviceId: deviceId,
-    //     timestamp: Date.now(),
-    //   })
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     setAddDeviceError(false);
-    //     setOpenBackdrop(false);
-    //   })
-    //   .catch((error) => {
-    //     console.log(error.response.status);
-    //     console.log(error.response.data);
-    //     setAddDeviceError(true);
-    //     setOpenBackdrop(false);
-    //   });
-  };
-
-  const getDevices = () => {
+    setDeviceAdded(true);
+    setIsLoading(true);
+    console.log(userId, userToken, deviceId, deviceName);
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        jwtToken: userToken,
+      },
+    };
     axios
-      .get('http://52.15.213.150:5000/api/devices', {
-        userId: userId,
-      })
+      .post(
+        'http://52.15.213.150:5000/api/devices',
+        {
+          userId: userId,
+          deviceName: deviceName,
+          deviceId: deviceId,
+          timestamp: Date.now(),
+        },
+        config
+      )
       .then((response) => {
         console.log(response.data);
-        // setAddDeviceError(false);
-        // setOpenBackdrop(false);
+        setDeviceAdded(true);
+        setIsLoading(false);
+        onCancel();
+        onDeviceAdd();
       })
       .catch((error) => {
         console.log(error.response.status);
         console.log(error.response.data);
-        // setAddDeviceError(true);
-        // setOpenBackdrop(false);
+        setDeviceAdded(false);
+        setIsLoading(false);
       });
   };
 
@@ -115,7 +112,7 @@ function AddDevice({ onCancel }) {
         <Typography component='h1' variant='h5' color='primary'>
           Add device
         </Typography>
-        {addDeviceError && (
+        {!deviceAdded && (
           <Alert severity='error' className={classes.alertStyle}>
             Device alreay exists.
           </Alert>
@@ -148,26 +145,29 @@ function AddDevice({ onCancel }) {
             value={deviceId}
             onChange={(e) => setDeviceId(e.target.value)}
           />
-          <div className={classes.buttonContainerStyle}>
-            <Button
-              type='button'
-              variant='contained'
-              color='textSecondary'
-              onClick={onCancel}
-            >
-              Cancel
-            </Button>
-            <Button
-              type='submit'
-              variant='contained'
-              color='primary'
-              className={classes.submit}
-            >
-              Add
-            </Button>
-          </div>
+          {isLoading ? (
+            <CircularProgress className={classes.circularProgressStyle} />
+          ) : (
+            <div className={classes.buttonContainerStyle}>
+              <Button
+                type='button'
+                variant='contained'
+                color='textSecondary'
+                onClick={onCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                type='submit'
+                variant='contained'
+                color='primary'
+                className={classes.submit}
+              >
+                Add
+              </Button>
+            </div>
+          )}
         </form>
-        {/* <CircularProgress className={classes.circularProgressStyle} /> */}
       </CardContent>
     </Card>
   );

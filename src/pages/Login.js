@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 // import styles from './Login.module.css';
 import Avatar from '@material-ui/core/Avatar';
@@ -56,6 +56,14 @@ function LoginPage() {
 
   // const authContext = useContext(AuthContext);
 
+  const userToken = localStorage.getItem('userToken');
+
+  useEffect(() => {
+    if (userToken && userToken !== '') {
+      history.push('/');
+    }
+  }, [userToken, history]);
+
   const submitHandler = (e) => {
     e.preventDefault();
     setLoginError(false);
@@ -67,7 +75,7 @@ function LoginPage() {
       })
       .then((response) => {
         console.log(response.data);
-        localStorage.setItem('token', response.data.jwtToken);
+        localStorage.setItem('userToken', response.data.jwtToken);
         localStorage.setItem(
           'username',
           response.data.userDetails.firstname +
