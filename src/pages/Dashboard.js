@@ -165,6 +165,7 @@ function Dashboard() {
   }, [userToken, history]);
 
   const [devices, setDevices] = useState([]);
+  const [searchedDevices, setSearchedDevices] = useState([]);
 
   const getDevices = () => {
     console.log(userId, userToken);
@@ -235,6 +236,29 @@ function Dashboard() {
   const handleDeviceDelete = () => {
     getDevices();
   };
+
+  const [enteredPhrase, setEnteredPhrase] = useState('');
+
+  const handleDeviceSearch = () => {
+    console.log(enteredPhrase);
+    if (enteredPhrase !== '') {
+      let searchedDevices = devices.filter((device) =>
+        device.devicename.toLowerCase().includes(enteredPhrase.toLowerCase())
+      );
+      console.log(searchedDevices);
+      setSearchedDevices(searchedDevices);
+    } else {
+      setSearchedDevices([]);
+    }
+  };
+
+  useEffect(() => {
+    const timeout = setTimeout(handleDeviceSearch, 500);
+    return () => {
+      console.log('clearTimeout');
+      clearTimeout(timeout);
+    };
+  }, [enteredPhrase]);
 
   return (
     <div className={classes.root}>
@@ -355,13 +379,7 @@ function Dashboard() {
           id='searchDeviceTextField'
           label='Search device'
           className={classes.textfield}
-          // onChange={(e) => {
-          //   let searchedDevice = devices.filter(
-          //     (device) => device.deviceName === e.target.value
-          //   );
-          //   console.log(e.target.value);
-          //   setDevices(searchedDevice[0]);
-          // }}
+          onChange={(e) => setEnteredPhrase(e.target.value)}
         />
 
         <Grid
@@ -376,6 +394,18 @@ function Dashboard() {
             <Grid item>
               <CircularProgress />
             </Grid>
+          ) : searchedDevices.length > 0 || enteredPhrase !== '' ? (
+            searchedDevices.map((device) => (
+              <Grid item key={device.id}>
+                <EnergyMeterCard
+                  deviceId={device.deviceid}
+                  deviceName={device.devicename}
+                  deviceAdded={getCustomDate(device.timestamp)}
+                  deviceType='Energy Meter'
+                  onDeviceDelete={handleDeviceDelete}
+                />
+              </Grid>
+            ))
           ) : (
             devices.map((device) => (
               <Grid item key={device.id}>
