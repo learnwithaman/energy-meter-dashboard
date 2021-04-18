@@ -12,6 +12,8 @@ import { IconButton } from '@material-ui/core';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import StarIcon from '@material-ui/icons/Star';
 import Grid from '@material-ui/core/Grid';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles({
   root: {},
@@ -67,53 +69,63 @@ function EnergyMeterCard({
     }
   };
 
+  const history = useHistory();
+
+  const handleDeviceCardClick = () => {
+    localStorage.setItem('deviceId', deviceId);
+    history.push('/device/details');
+  };
+
   return (
     <Card className={classes.root} elevation={6}>
-      <CardActions className={classes.cardActionsStyle}>
-        <IconButton
-          size='small'
-          className={classes.starBorderIconButtonStyle}
-          onClick={toggleFavorite}
-        >
-          {favorite ? (
-            <StarIcon fontSize='small' color='primary' />
-          ) : (
-            <StarBorderIcon fontSize='small' />
-          )}
-        </IconButton>
-      </CardActions>
-      <CardContent className={classes.cardContentStyle}>
-        <Grid container spacing={2}>
-          <Grid item>
-            <CardMedia
-              className={classes.media}
-              image='/static/images/energy-meter.png'
-              title='Energy Meter'
-            />
+      <CardActionArea onClick={handleDeviceCardClick}>
+        <CardActions className={classes.cardActionsStyle}>
+          <IconButton
+            size='small'
+            className={classes.starBorderIconButtonStyle}
+            onClick={toggleFavorite}
+          >
+            {favorite ? (
+              <StarIcon fontSize='small' color='primary' />
+            ) : (
+              <StarBorderIcon fontSize='small' />
+            )}
+          </IconButton>
+        </CardActions>
+        <CardContent className={classes.cardContentStyle}>
+          <Grid container spacing={2}>
+            <Grid item>
+              <CardMedia
+                className={classes.media}
+                image='/static/images/energy-meter.png'
+                title='Energy Meter'
+              />
+            </Grid>
+            <Grid item>
+              <Typography variant='h6' component='h6' color='textSecondary'>
+                {deviceName}
+              </Typography>
+              <Typography variant='body2' color='textSecondary' component='p'>
+                <strong>Added: </strong>
+                {deviceAdded}
+              </Typography>
+              <Typography variant='body2' color='textSecondary' component='p'>
+                <strong>Type: </strong>
+                {deviceType}
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item>
-            <Typography variant='h6' component='h6' color='textSecondary'>
-              {deviceName}
-            </Typography>
-            <Typography variant='body2' color='textSecondary' component='p'>
-              <strong>Added: </strong>
-              {deviceAdded}
-            </Typography>
-            <Typography variant='body2' color='textSecondary' component='p'>
-              <strong>Type: </strong>
-              {deviceType}
-            </Typography>
-          </Grid>
-        </Grid>
-      </CardContent>
-      <CardActions disableSpacing className={classes.cardActionsStyle}>
-        <IconButton size='small'>
-          <SettingsIcon fontSize='small' />
-        </IconButton>
-        <IconButton size='small'>
-          <DeleteIcon fontSize='small' onClick={handleDeviceDelete} />
-        </IconButton>
-      </CardActions>
+        </CardContent>
+
+        <CardActions disableSpacing className={classes.cardActionsStyle}>
+          <IconButton size='small'>
+            <SettingsIcon fontSize='small' />
+          </IconButton>
+          <IconButton size='small'>
+            <DeleteIcon fontSize='small' onClick={handleDeviceDelete} />
+          </IconButton>
+        </CardActions>
+      </CardActionArea>
     </Card>
   );
 }

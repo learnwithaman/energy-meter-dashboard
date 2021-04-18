@@ -24,7 +24,7 @@ import Menu from '@material-ui/core/Menu';
 import EnergyMeterCard from '../components/EnergyMeterCard';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import DesktopMacIcon from '@material-ui/icons/DesktopMac';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import { TextField } from '@material-ui/core';
@@ -33,6 +33,7 @@ import AddDevice from '../components/AddDeviceModal';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AppsIcon from '@material-ui/icons/Apps';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import DeviceDetail from './DeviceDetail';
 
 const drawerWidth = 240;
 
@@ -141,7 +142,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Dashboard() {
+function Dashboard(props) {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -260,6 +261,8 @@ function Dashboard() {
     };
   }, [enteredPhrase]);
 
+  const location = useLocation();
+
   return (
     <div className={classes.root}>
       <AppBar
@@ -350,7 +353,9 @@ function Dashboard() {
       >
         <div className={classes.toolbar}>
           {/* <AppsIcon /> */}
-          <Typography className={classes.companyNameStyle}>I/O</Typography>
+          <Typography className={classes.companyNameStyle}>
+            Datablare
+          </Typography>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'rtl' ? (
               <ChevronRightIcon />
@@ -373,7 +378,7 @@ function Dashboard() {
           ))}
         </List>
       </Drawer>
-      <main className={classes.content}>
+      {/* <main className={classes.content}>
         <div className={classes.toolbar} />
         <TextField
           id='searchDeviceTextField'
@@ -429,7 +434,68 @@ function Dashboard() {
         >
           <AddIcon />
         </Fab>
-      </main>
+      </main> */}
+      {location.pathname === '/' ? (
+        <main className={classes.content}>
+          <div className={classes.toolbar} />
+          <TextField
+            id='searchDeviceTextField'
+            label='Search device'
+            className={classes.textfield}
+            onChange={(e) => setEnteredPhrase(e.target.value)}
+          />
+
+          <Grid
+            container
+            direction='row'
+            justify='flex-start'
+            alignItems='flex-start'
+            spacing={4}
+            className={classes.gridContainer}
+          >
+            {isLoading ? (
+              <Grid item>
+                <CircularProgress />
+              </Grid>
+            ) : searchedDevices.length > 0 || enteredPhrase !== '' ? (
+              searchedDevices.map((device) => (
+                <Grid item key={device.id}>
+                  <EnergyMeterCard
+                    deviceId={device.deviceid}
+                    deviceName={device.devicename}
+                    deviceAdded={getCustomDate(device.timestamp)}
+                    deviceType='Energy Meter'
+                    onDeviceDelete={handleDeviceDelete}
+                  />
+                </Grid>
+              ))
+            ) : (
+              devices.map((device) => (
+                <Grid item key={device.id}>
+                  <EnergyMeterCard
+                    deviceId={device.deviceid}
+                    deviceName={device.devicename}
+                    deviceAdded={getCustomDate(device.timestamp)}
+                    deviceType='Energy Meter'
+                    onDeviceDelete={handleDeviceDelete}
+                  />
+                </Grid>
+              ))
+            )}
+          </Grid>
+
+          <Fab
+            color='secondary'
+            aria-label='add'
+            className={classes.fabStyle}
+            onClick={fabHandler}
+          >
+            <AddIcon />
+          </Fab>
+        </main>
+      ) : (
+        props.children
+      )}
       <Modal
         open={openAddDeviceModal}
         onClose={handleAddDeviceModalClose}

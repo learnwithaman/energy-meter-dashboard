@@ -11,6 +11,8 @@ import { blue, deepOrange } from '@material-ui/core/colors';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AuthContext from './store/auth-context';
 import AddDevice from './components/AddDeviceModal';
+import DeviceDetail from './pages/DeviceDetail';
+import DeviceOverview from './pages/DeviceOverview';
 
 const theme = createMuiTheme({
   palette: {
@@ -32,8 +34,15 @@ function App() {
         <Route path='/signup'>
           <SignupPage />
         </Route>
+        <Route path='/device/details'>
+          <Dashboard>
+            <DeviceDetail />
+          </Dashboard>
+        </Route>
         <Route exact path='/'>
-          <Dashboard />
+          <Dashboard>
+            <DeviceOverview />
+          </Dashboard>
         </Route>
         <Route path='*' render={() => '404 NOT FOUND'} />
       </Switch>
