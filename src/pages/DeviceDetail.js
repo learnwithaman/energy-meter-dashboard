@@ -145,25 +145,33 @@ function DeviceDetail() {
     console.log(buttonStateNum);
 
     const userToken = localStorage.getItem('userToken', '');
-    // axios
-    //   .post(
-    //     '/api/trigger',
-    //     {
-    //       device_id: '123',
-    //       m_trig: buttonStateNum,
-    //     },
-    //     {
-    //       headers: {
-    //         jwtToken: userToken,
-    //       },
-    //     }
-    //   )
-    //   .then((response) => {
-    //     console.log(response.data);
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
+    const deviceId = localStorage.getItem('deviceId', '');
+
+    axios
+      .post(
+        'http://52.15.213.150:5000/api/devices/trigger',
+        {
+          device_id: deviceId,
+          m_trig: buttonStateNum,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            jwtToken: userToken,
+          },
+        }
+      )
+      .then((response) => {
+        const m_trig = Number(response.data.split(':')[1]);
+        if (m_trig === 1) {
+          setToggleMotorButton(true);
+        } else {
+          setToggleMotorButton(false);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   useEffect(() => {

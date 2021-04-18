@@ -22,7 +22,7 @@ const theme = createMuiTheme({
 });
 
 function App() {
-  const authContext = useContext(AuthContext);
+  // const authContext = useContext(AuthContext);
 
   return (
     <ThemeProvider theme={theme}>
