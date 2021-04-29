@@ -18,6 +18,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import { CircularProgress } from '@material-ui/core';
+import SchedularConfigurations from '../components/SchedularConfigurations';
 
 const useStyles = makeStyles((theme) => ({
   gridContainerStyle: {
@@ -171,6 +172,7 @@ function DeviceDetail() {
       })
       .catch((error) => {
         console.log(error);
+        setToggleMotorButton(false);
       });
   };
 
@@ -373,7 +375,7 @@ function DeviceDetail() {
                     >
                       <Tab label='Power' {...a11yProps(0)} />
                       <Tab label='Line-Line Voltage' {...a11yProps(1)} />
-                      <Tab label='Current' {...a11yProps(2)} />
+                      <Tab label='Schedular Configurations' {...a11yProps(2)} />
                       <Tab label='Forward Active Energy' {...a11yProps(3)} />
                       <Tab label='Flowmeter' {...a11yProps(4)} />
                       <Tab label='Misc.' {...a11yProps(5)} />
@@ -587,7 +589,7 @@ function DeviceDetail() {
                     </Grid>
                   </TabPanel>
                   <TabPanel value={value} index={2}>
-                    Current
+                    <SchedularConfigurations />
                   </TabPanel>
                   <TabPanel value={value} index={3}>
                     Forward Active Energy
