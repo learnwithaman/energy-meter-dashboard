@@ -331,7 +331,7 @@ function Dashboard(props) {
                 open={openAccountMenu}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                {/* <MenuItem onClick={handleClose}>Profile</MenuItem> */}
                 <MenuItem onClick={handleLogout}>Log out</MenuItem>
               </Menu>
             </div>
@@ -378,7 +378,7 @@ function Dashboard(props) {
           ))}
         </List>
       </Drawer>
-      {location.pathname === '/' ? (
+      {/* {location.pathname === '/' ? (
         <main className={classes.content}>
           <div className={classes.toolbar} />
           <TextField
@@ -438,7 +438,7 @@ function Dashboard(props) {
         </main>
       ) : (
         props.children
-      )}
+      )} */}
       <Modal
         open={openAddDeviceModal}
         onClose={handleAddDeviceModalClose}
