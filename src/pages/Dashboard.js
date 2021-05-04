@@ -34,6 +34,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AppsIcon from '@material-ui/icons/Apps';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DeviceDetail from './DeviceDetail';
+import GaugeChart from 'react-gauge-chart';
+import DashboardIcon from '@material-ui/icons/Dashboard';
 
 const drawerWidth = 240;
 
@@ -95,7 +97,8 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+    paddingTop: theme.spacing(12),
+    paddingLeft: theme.spacing(6),
   },
   textfield: {
     [theme.breakpoints.down('sm')]: {
@@ -139,6 +142,9 @@ const useStyles = makeStyles((theme) => ({
   companyNameStyle: {
     marginRight: 'auto',
     marginLeft: theme.spacing(2),
+  },
+  gaugeChartStyle: {
+    marginTop: theme.spacing(12),
   },
 }));
 
@@ -283,10 +289,11 @@ function Dashboard(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant='h6' noWrap>
-            Dashboard
-          </Typography>
-          <div className={classes.grow} />
+          <div className={classes.grow} style={{ textAlign: 'center' }}>
+            <Typography variant='h6' noWrap>
+              ACME CMS
+            </Typography>
+          </div>
           <div className={classes.sectionDesktop}>
             <div>
               <Grid
@@ -353,9 +360,7 @@ function Dashboard(props) {
       >
         <div className={classes.toolbar}>
           {/* <AppsIcon /> */}
-          <Typography className={classes.companyNameStyle}>
-            Datablare
-          </Typography>
+          <Typography className={classes.companyNameStyle}>CMS</Typography>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'rtl' ? (
               <ChevronRightIcon />
@@ -366,10 +371,10 @@ function Dashboard(props) {
         </div>
         <Divider />
         <List>
-          {['Devices', 'Triggers', 'Reports'].map((text, index) => (
+          {['Dashboard'].map((text, index) => (
             <ListItem button key={text} selected={index === 0}>
               <ListItemIcon>
-                {index === 0 && <DesktopMacIcon />}
+                {index === 0 && <DashboardIcon />}
                 {index === 1 && <NotificationsIcon />}
                 {index === 2 && <AssessmentIcon />}
               </ListItemIcon>
@@ -378,6 +383,28 @@ function Dashboard(props) {
           ))}
         </List>
       </Drawer>
+
+      <main className={classes.content}>
+        <Grid container spacing={4}>
+          <Grid item>
+            <Typography>Chhattisgarh</Typography>
+          </Grid>
+          <Grid item>
+            <Typography>15 MW/h</Typography>
+          </Grid>
+        </Grid>
+        <Grid container spacing={4}>
+          <Grid item>
+            <Typography>
+              <span style={{ color: '#4caf50' }}>Online</span>
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography>{new Date().toDateString()}</Typography>
+          </Grid>
+        </Grid>
+      </main>
+
       {/* {location.pathname === '/' ? (
         <main className={classes.content}>
           <div className={classes.toolbar} />
@@ -439,7 +466,7 @@ function Dashboard(props) {
       ) : (
         props.children
       )} */}
-      <Modal
+      {/* <Modal
         open={openAddDeviceModal}
         onClose={handleAddDeviceModalClose}
         aria-labelledby='add-device-modal'
@@ -449,7 +476,7 @@ function Dashboard(props) {
           onCancel={handleAddDeviceModalClose}
           onDeviceAdd={handleDeviceAdd}
         />
-      </Modal>
+      </Modal> */}
     </div>
   );
 }
