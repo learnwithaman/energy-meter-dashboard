@@ -104,9 +104,14 @@ function LoginPage() {
     <>
       <Container component='main' maxWidth='xs'>
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
+          {/* <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
-          </Avatar>
+          </Avatar> */}
+          <img
+            src='/static/images/energy-meter.png'
+            alt='ACME brand logo'
+            style={{ width: '4rem', marginBottom: '1rem' }}
+          />
           <Typography component='h1' variant='h5'>
             Sign in
           </Typography>

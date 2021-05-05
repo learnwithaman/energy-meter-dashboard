@@ -11,11 +11,15 @@
     "@testing-library/user-event": "^12.8.3",
     "axios": "^0.21.1",
     "fontsource-roboto": "^4.0.0",
+    "igniteui-react-core": "^16.13.1",
     "react": "^17.0.2",
+    "react-d3-speedometer": "^1.0.1",
     "react-dom": "^17.0.2",
+    "react-environment-chart": "^0.1.7",
     "react-gauge-chart": "^0.3.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "react-thermometer-chart": "^1.0.2",
     "web-vitals": "^1.1.1"
   },
   "scripts": {

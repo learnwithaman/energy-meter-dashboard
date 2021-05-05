@@ -21,7 +21,6 @@ import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import EnergyMeterCard from '../components/EnergyMeterCard';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -29,13 +28,17 @@ import DesktopMacIcon from '@material-ui/icons/DesktopMac';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import { TextField } from '@material-ui/core';
 import Modal from '@material-ui/core/Modal';
-import AddDevice from '../components/AddDeviceModal';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AppsIcon from '@material-ui/icons/Apps';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import DeviceDetail from './DeviceDetail';
 import GaugeChart from 'react-gauge-chart';
 import DashboardIcon from '@material-ui/icons/Dashboard';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import ReactSpeedometer from 'react-d3-speedometer';
+import ReactEnvironmentChart from 'react-environment-chart';
+import { Temperature } from 'react-environment-chart';
+import Thermometer from 'react-thermometer-chart';
 
 const drawerWidth = 240;
 
@@ -146,11 +149,27 @@ const useStyles = makeStyles((theme) => ({
   gaugeChartStyle: {
     marginTop: theme.spacing(12),
   },
+  cardGridContainerStyle: {
+    marginTop: theme.spacing(5),
+    paddingLeft: theme.spacing(0.5),
+    paddingRight: theme.spacing(4),
+    width: '100%',
+  },
+  card: {
+    minWidth: 200,
+    minHeight: 100,
+  },
+  chartGridContainerStyle: {
+    marginLeft: theme.spacing(0.5),
+    marginTop: theme.spacing(6.5),
+  },
 }));
 
 function Dashboard(props) {
   const classes = useStyles();
   const theme = useTheme();
+
+  const history = useHistory();
 
   const username = localStorage.getItem('username', 'Admin');
   const userToken = localStorage.getItem('userToken');
@@ -158,46 +177,54 @@ function Dashboard(props) {
 
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [openAddDeviceModal, setAddDeviceModal] = React.useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const openAccountMenu = Boolean(anchorEl);
 
-  const history = useHistory();
+  // Status and Time states
+  const [status, setStatus] = useState(0);
+  const [timestamp, setTimestamp] = useState(Date.now());
+  const [isStatusLoading, setIsStatusLoading] = useState(false);
+
+  // totalExport state
+  const [totalExport, setTotalExport] = useState(0);
 
   useEffect(() => {
     if (!userToken || userToken === '') {
       history.push('/login');
     }
+    console.log('useEffect running...');
   }, [userToken, history]);
 
-  const [devices, setDevices] = useState([]);
-  const [searchedDevices, setSearchedDevices] = useState([]);
+  useEffect(() => {
+    const interval = setInterval(getTotalExport, 5000);
 
-  const getDevices = () => {
-    console.log(userId, userToken);
-    setIsLoading(true);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  const getTotalExport = () => {
+    setTotalExport(5);
+    console.log(totalExport);
+  };
+
+  const getStatusAndTime = () => {
+    setIsStatusLoading(true);
     axios
-      .get('http://52.15.213.150:5000/api/devices/' + userId, {
+      .get('http://localhost:5000/api/site/', {
         headers: {
           jwtToken: userToken,
         },
       })
       .then((response) => {
-        console.log(response.data);
-        setDevices(response.data);
-        setIsLoading(false);
+        setStatus(response.data.status);
+        setTimestamp(response.data.timestamp);
+        setIsStatusLoading(false);
       })
       .catch((error) => {
-        console.log(error.response.status);
-        console.log(error.response.data);
-        setIsLoading(false);
+        setIsStatusLoading(false);
       });
   };
-
-  useEffect(() => {
-    getDevices();
-  }, []);
 
   const handleDrawerOpen = () => {
     setOpenDrawer(true);
@@ -223,51 +250,10 @@ function Dashboard(props) {
     history.replace('/login');
   };
 
-  const fabHandler = () => {
-    setAddDeviceModal(true);
+  const getDateAndTimeString = (timestamp) => {
+    const newDate = new Date(Date.now());
+    return `${newDate.toLocaleDateString()}  ${newDate.toLocaleTimeString()}`;
   };
-
-  const handleAddDeviceModalClose = () => {
-    setAddDeviceModal(false);
-  };
-
-  const getCustomDate = (timestamp) => {
-    const date = new Date(Number(timestamp));
-    return date.toLocaleString();
-  };
-
-  const handleDeviceAdd = () => {
-    getDevices();
-  };
-
-  const handleDeviceDelete = () => {
-    getDevices();
-  };
-
-  const [enteredPhrase, setEnteredPhrase] = useState('');
-
-  const handleDeviceSearch = () => {
-    console.log(enteredPhrase);
-    if (enteredPhrase !== '') {
-      let searchedDevices = devices.filter((device) =>
-        device.devicename.toLowerCase().includes(enteredPhrase.toLowerCase())
-      );
-      console.log(searchedDevices);
-      setSearchedDevices(searchedDevices);
-    } else {
-      setSearchedDevices([]);
-    }
-  };
-
-  useEffect(() => {
-    const timeout = setTimeout(handleDeviceSearch, 500);
-    return () => {
-      console.log('clearTimeout');
-      clearTimeout(timeout);
-    };
-  }, [enteredPhrase]);
-
-  const location = useLocation();
 
   return (
     <div className={classes.root}>
@@ -302,15 +288,6 @@ function Dashboard(props) {
                 justify='center'
                 alignItems='center'
               >
-                {/* <IconButton
-                  aria-label='show new notifications'
-                  color='inherit'
-                  className={classes.userNotificationIconButtonStyle}
-                >
-                  <Badge badgeContent={1} color='secondary'>
-                    <NotificationsIcon />
-                  </Badge>
-                </IconButton> */}
                 <Typography>{username}</Typography>
                 <IconButton
                   edge='end'
@@ -392,91 +369,155 @@ function Dashboard(props) {
           <Grid item>
             <Typography>15 MW/h</Typography>
           </Grid>
+          <div className={classes.grow}></div>
+          {false ? (
+            <>
+              <div style={{ paddingTop: '1rem', marginRight: '6rem' }}>
+                <CircularProgress size={30} />
+              </div>
+            </>
+          ) : (
+            <>
+              <Grid item>
+                <Typography>
+                  {status === 0 ? (
+                    <span style={{ color: '#f44336' }}>Offline</span>
+                  ) : (
+                    <span style={{ color: '#4caf50' }}>Online</span>
+                  )}
+                </Typography>
+              </Grid>
+              <Grid item>
+                {timestamp && <Typography>{getDateAndTimeString()}</Typography>}
+              </Grid>
+              <div style={{ marginRight: '2rem' }}></div>
+            </>
+          )}
         </Grid>
-        <Grid container spacing={4}>
-          <Grid item>
-            <Typography>
-              <span style={{ color: '#4caf50' }}>Online</span>
-            </Typography>
+        <Grid
+          container
+          className={classes.cardGridContainerStyle}
+          justify='space-between'
+          alignItems='center'
+        >
+          <Grid>
+            <Card className={classes.card} elevation={4}>
+              <CardContent>
+                <Typography>Abc</Typography>
+              </CardContent>
+            </Card>
           </Grid>
           <Grid item>
-            <Typography>{new Date().toDateString()}</Typography>
+            <Card className={classes.card} elevation={4}>
+              <CardContent>
+                <Typography>Abc</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item>
+            <Card className={classes.card} elevation={4}>
+              <CardContent>
+                <Typography>Abc</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item>
+            <Card className={classes.card} elevation={4}>
+              <CardContent>
+                <Typography>Abc</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item>
+            <Card className={classes.card} elevation={4}>
+              <CardContent>
+                <Typography>Abc</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+        <Grid container className={classes.chartGridContainerStyle}>
+          <Grid item>
+            <Card
+              elevation={6}
+              style={{ height: '290px', width: 'max-content' }}
+            >
+              <CardContent>
+                <Typography
+                  variant='h6'
+                  color='textSecondary'
+                  style={{ marginLeft: '0.75rem', marginBottom: '1rem' }}
+                >
+                  Total Export
+                </Typography>
+                {/* <GaugeChart
+                  id='gauge-chart2'
+                  nrOfLevels={25}
+                  colors={['#ffeb3b', '#ff9100']}
+                  textColor='#5393ff'
+                  needleColor='#757575'
+                  needleBaseColor='#757575'
+                  arcWidth={0.3}
+                  percent={0.74}
+                  formatTextValue={(value) => `${totalExport}  MW`}
+                  marginInPercent={0.02}
+                /> */}
+                <ReactSpeedometer
+                  minValue={0}
+                  maxValue={50}
+                  value={22}
+                  startColor='#91ff35'
+                  endColor='#4caf50'
+                  width={350}
+                  currentValueText='22 MW'
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item style={{ marginLeft: '2rem' }}>
+            <Card elevation={6} style={{ height: '290px' }}>
+              <CardContent>
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <Typography
+                      align='center'
+                      style={{ marginBottom: '.5rem' }}
+                    >
+                      Title
+                    </Typography>
+                    <Thermometer
+                      steps={8}
+                      minValue={-20}
+                      maxValue={60}
+                      height='200px'
+                    />
+                    <Typography align='center' style={{ marginTop: '.25rem' }}>
+                      30°C
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography
+                      align='center'
+                      style={{ marginBottom: '.5rem' }}
+                    >
+                      Title
+                    </Typography>
+                    <Thermometer
+                      steps={8}
+                      minValue={-20}
+                      maxValue={60}
+                      height='200px'
+                    />
+                    <Typography align='center' style={{ marginTop: '.25rem' }}>
+                      30°C
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
           </Grid>
         </Grid>
       </main>
-
-      {/* {location.pathname === '/' ? (
-        <main className={classes.content}>
-          <div className={classes.toolbar} />
-          <TextField
-            id='searchDeviceTextField'
-            label='Search device'
-            className={classes.textfield}
-            onChange={(e) => setEnteredPhrase(e.target.value)}
-          />
-
-          <Grid
-            container
-            direction='row'
-            justify='flex-start'
-            alignItems='flex-start'
-            spacing={4}
-            className={classes.gridContainer}
-          >
-            {isLoading ? (
-              <Grid item>
-                <CircularProgress />
-              </Grid>
-            ) : searchedDevices.length > 0 || enteredPhrase !== '' ? (
-              searchedDevices.map((device) => (
-                <Grid item key={device.id}>
-                  <EnergyMeterCard
-                    deviceId={device.deviceid}
-                    deviceName={device.devicename}
-                    deviceAdded={getCustomDate(device.timestamp)}
-                    deviceType='Energy Meter'
-                    onDeviceDelete={handleDeviceDelete}
-                  />
-                </Grid>
-              ))
-            ) : (
-              devices.map((device) => (
-                <Grid item key={device.id}>
-                  <EnergyMeterCard
-                    deviceId={device.deviceid}
-                    deviceName={device.devicename}
-                    deviceAdded={getCustomDate(device.timestamp)}
-                    deviceType='Energy Meter'
-                    onDeviceDelete={handleDeviceDelete}
-                  />
-                </Grid>
-              ))
-            )}
-          </Grid>
-
-          <Fab
-            color='secondary'
-            aria-label='add'
-            className={classes.fabStyle}
-            onClick={fabHandler}
-          >
-            <AddIcon />
-          </Fab>
-        </main>
-      ) : (
-        props.children
-      )} */}
-      {/* <Modal
-        open={openAddDeviceModal}
-        onClose={handleAddDeviceModalClose}
-        aria-labelledby='add-device-modal'
-        aria-describedby='add-device'
-      >
-        <AddDevice
-          onCancel={handleAddDeviceModalClose}
-          onDeviceAdd={handleDeviceAdd}
-        />
-      </Modal> */}
     </div>
   );
 }
