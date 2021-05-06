@@ -566,7 +566,7 @@ function Dashboard(props) {
           <Grid item>
             <Card
               elevation={6}
-              style={{ height: '290px', width: 'max-content' }}
+              style={{ height: '310px', width: 'max-content' }}
             >
               <CardContent>
                 <Typography
@@ -594,9 +594,24 @@ function Dashboard(props) {
                   value={22}
                   startColor='#91ff35'
                   endColor='#4caf50'
-                  width={350}
+                  width={400}
                   currentValueText='22 MW'
                 />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item>
+            <Card elevation={6}>
+              <CardContent>
+                <Typography style={{ marginBottom: '1.5rem' }} align='center'>
+                  Wind direction/speed
+                </Typography>
+                <div style={{ marginLeft: '1.5rem', marginRight: '1.5rem' }}>
+                  <Compass size={170} rotate={220} />
+                </div>
+                <Typography style={{ marginTop: '1.5rem' }} align='center'>
+                  220°, 100 km/h
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -651,21 +666,11 @@ function Dashboard(props) {
                 <Typography>Title</Typography>
                 <div
                   id='chartdiv'
-                  style={{ height: '380px', width: '380px' }}
+                  style={{ height: '250px', width: '250px' }}
                 />
               </CardContent>
             </Card>
           </Grid> */}
-          <Grid item>
-            <Card elevation={6}>
-              <CardContent>
-                <Typography gutterBottom>Title</Typography>
-                <div style={{ marginLeft: '1.5rem', marginRight: '1.5rem' }}>
-                  <Compass size={280} rotate={350} />
-                </div>
-              </CardContent>
-            </Card>
-          </Grid>
           {/* <Grid item>
             <Card elevation={6}>
               <CardContent>
