@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import axios from 'axios';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -39,6 +39,12 @@ import ReactSpeedometer from 'react-d3-speedometer';
 import ReactEnvironmentChart from 'react-environment-chart';
 import { Temperature } from 'react-environment-chart';
 import Thermometer from 'react-thermometer-chart';
+import * as am4core from '@amcharts/amcharts4/core';
+import * as am4charts from '@amcharts/amcharts4/charts';
+import am4themes_animated from '@amcharts/amcharts4/themes/animated';
+import Compass from '../components/Compass';
+
+am4core.useTheme(am4themes_animated);
 
 const drawerWidth = 240;
 
@@ -255,6 +261,119 @@ function Dashboard(props) {
     return `${newDate.toLocaleDateString()}  ${newDate.toLocaleTimeString()}`;
   };
 
+  useLayoutEffect(() => {
+    // create chart
+    let chart = am4core.create('chartdiv', am4charts.GaugeChart);
+    // chart.exporting.menu = new am4core.ExportMenu();
+    // chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+
+    chart.startAngle = -90;
+    chart.endAngle = 270;
+
+    let axis = chart.xAxes.push(new am4charts.ValueAxis());
+    axis.min = 0;
+    axis.max = 360;
+
+    axis.renderer.line.strokeWidth = 8;
+    axis.renderer.line.strokeOpacity = 1;
+    axis.renderer.line.stroke = am4core.color('#999');
+    axis.renderer.inside = true;
+
+    axis.renderer.axisFills.template.disabled = true;
+    axis.renderer.grid.template.disabled = true;
+    axis.renderer.ticks.template.disabled = false;
+    axis.renderer.ticks.template.length = 12;
+    axis.renderer.ticks.template.strokeOpacity = 1;
+
+    axis.renderer.labels.template.radius = 35;
+    axis.renderer.labels.template.disabled = true;
+    axis.renderer.ticks.template.disabled = true;
+
+    function createLabel(label, deg) {
+      let range = axis.axisRanges.create();
+      range.value = deg;
+      range.grid.disabled = true;
+      range.label.text = label;
+    }
+
+    createLabel('N', 0);
+    createLabel('', 22.5);
+    createLabel('NE', 45);
+    createLabel('', 67.5);
+    createLabel('E', 90);
+    createLabel('', 112.5);
+    createLabel('SE', 135);
+    createLabel('', 157.5);
+    createLabel('S', 180);
+    createLabel('', 202.5);
+    createLabel('SW', 225);
+    createLabel('', 247.5);
+    createLabel('W', 270);
+    createLabel('', 292.5);
+    createLabel('NW', 315);
+    createLabel('', 337.5);
+
+    // hands
+    let northHand = chart.hands.push(new am4charts.ClockHand());
+    northHand.radius = am4core.percent(80);
+    northHand.startWidth = 20;
+    northHand.endWidth = 1;
+    northHand.rotationDirection = 'clockWise';
+    northHand.pin.disabled = true;
+    northHand.zIndex = 0;
+    northHand.fill = am4core.color('#c00');
+    northHand.stroke = am4core.color('#c00');
+    northHand.value = 2;
+
+    let southHand = chart.hands.push(new am4charts.ClockHand());
+    southHand.radius = am4core.percent(80);
+    southHand.startWidth = 20;
+    southHand.endWidth = 1;
+    southHand.rotationDirection = 'clockWise';
+    southHand.pin.disabled = true;
+    southHand.zIndex = 0;
+    southHand.fill = am4core.color('#555');
+    southHand.stroke = am4core.color('#555');
+    southHand.value = 182;
+
+    // setInterval(rotateCompass, 5000);
+
+    function rotateCompass() {
+      let angle = am4core.utils.random(-100, 100);
+
+      // chart.startAngle = -90 + angle;
+      // chart.endAngle = 270 + angle;
+      // northHand.value = 0 - angle;
+      // southHand.value = 180 - angle;
+
+      chart.animate(
+        { property: 'startAngle', to: angle },
+        1000,
+        am4core.ease.cubicOut
+      );
+      chart.animate(
+        { property: 'endAngle', to: angle + 360 },
+        1000,
+        am4core.ease.cubicOut
+      );
+
+      northHand.animate(
+        { property: 'value', to: -90 - angle },
+        1000,
+        am4core.ease.cubicOut
+      );
+      southHand.animate(
+        { property: 'value', to: 90 - angle },
+        1000,
+        am4core.ease.cubicOut
+      );
+    }
+
+    return () => {
+      chart.dispose();
+    };
+  }, []);
+
   return (
     <div className={classes.root}>
       <AppBar
@@ -362,7 +481,7 @@ function Dashboard(props) {
       </Drawer>
 
       <main className={classes.content}>
-        <Grid container spacing={4}>
+        <Grid container spacing={4} style={{ paddingLeft: '.25rem' }}>
           <Grid item>
             <Typography>Chhattisgarh</Typography>
           </Grid>
@@ -436,7 +555,14 @@ function Dashboard(props) {
             </Card>
           </Grid>
         </Grid>
-        <Grid container className={classes.chartGridContainerStyle}>
+        <Grid
+          container
+          className={classes.chartGridContainerStyle}
+          direction='row'
+          justify='space-between'
+          alignItems='flex-start'
+          style={{ paddingRight: '2.5rem' }}
+        >
           <Grid item>
             <Card
               elevation={6}
@@ -474,14 +600,21 @@ function Dashboard(props) {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item style={{ marginLeft: '2rem' }}>
-            <Card elevation={6} style={{ height: '290px' }}>
+          <Grid item>
+            <Card
+              elevation={6}
+              style={{
+                height: '400px',
+                paddingLeft: '1.5rem',
+                paddingRight: '1.5rem',
+              }}
+            >
               <CardContent>
-                <Grid container spacing={2}>
+                <Grid container spacing={3}>
                   <Grid item>
                     <Typography
                       align='center'
-                      style={{ marginBottom: '.5rem' }}
+                      style={{ marginBottom: '.25rem' }}
                     >
                       Title
                     </Typography>
@@ -489,16 +622,14 @@ function Dashboard(props) {
                       steps={8}
                       minValue={-20}
                       maxValue={60}
-                      height='200px'
+                      height='300px'
                     />
-                    <Typography align='center' style={{ marginTop: '.25rem' }}>
-                      30°C
-                    </Typography>
+                    <Typography align='center'>30°C</Typography>
                   </Grid>
                   <Grid item>
                     <Typography
                       align='center'
-                      style={{ marginBottom: '.5rem' }}
+                      style={{ marginBottom: '.25rem' }}
                     >
                       Title
                     </Typography>
@@ -506,16 +637,42 @@ function Dashboard(props) {
                       steps={8}
                       minValue={-20}
                       maxValue={60}
-                      height='200px'
+                      height='300px'
                     />
-                    <Typography align='center' style={{ marginTop: '.25rem' }}>
-                      30°C
-                    </Typography>
+                    <Typography align='center'>30°C</Typography>
                   </Grid>
                 </Grid>
               </CardContent>
             </Card>
           </Grid>
+          {/* <Grid item>
+            <Card elevation={6}>
+              <CardContent>
+                <Typography>Title</Typography>
+                <div
+                  id='chartdiv'
+                  style={{ height: '380px', width: '380px' }}
+                />
+              </CardContent>
+            </Card>
+          </Grid> */}
+          <Grid item>
+            <Card elevation={6}>
+              <CardContent>
+                <Typography gutterBottom>Title</Typography>
+                <div style={{ marginLeft: '1.5rem', marginRight: '1.5rem' }}>
+                  <Compass size={280} rotate={350} />
+                </div>
+              </CardContent>
+            </Card>
+          </Grid>
+          {/* <Grid item>
+            <Card elevation={6}>
+              <CardContent>
+                <Typography>Abc</Typography>
+              </CardContent>
+            </Card>
+          </Grid> */}
         </Grid>
       </main>
     </div>
