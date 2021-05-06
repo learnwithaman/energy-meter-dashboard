@@ -23,6 +23,8 @@
     "react-scripts": "4.0.3",
     "react-style-normalizer": "^1.2.8",
     "react-thermometer-chart": "^1.0.2",
+    "react-thermometer-component": "^1.0.1",
+    "recharts": "^2.0.9",
     "web-vitals": "^1.1.1"
   },
   "scripts": {

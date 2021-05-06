@@ -38,11 +38,13 @@ import CardContent from '@material-ui/core/CardContent';
 import ReactSpeedometer from 'react-d3-speedometer';
 import ReactEnvironmentChart from 'react-environment-chart';
 import { Temperature } from 'react-environment-chart';
-import Thermometer from 'react-thermometer-chart';
 import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
 import am4themes_animated from '@amcharts/amcharts4/themes/animated';
 import Compass from '../components/Compass';
+import ThermometerWrapper from '../components/ThermometerWrapper';
+import Thermometer from 'react-thermometer-component';
+import BiaxialLineChart from '../components/BiaxialLineChart';
 
 am4core.useTheme(am4themes_animated);
 
@@ -604,7 +606,7 @@ function Dashboard(props) {
             <Card elevation={6}>
               <CardContent>
                 <Typography style={{ marginBottom: '1.5rem' }} align='center'>
-                  Wind direction/speed
+                  Wind direction and speed
                 </Typography>
                 <div style={{ marginLeft: '1.5rem', marginRight: '1.5rem' }}>
                   <Compass size={170} rotate={220} />
@@ -627,34 +629,34 @@ function Dashboard(props) {
               <CardContent>
                 <Grid container spacing={3}>
                   <Grid item>
-                    <Typography
-                      align='center'
-                      style={{ marginBottom: '.25rem' }}
-                    >
+                    <Typography align='center' style={{ marginBottom: '1rem' }}>
                       Title
                     </Typography>
                     <Thermometer
-                      steps={8}
-                      minValue={-20}
-                      maxValue={60}
-                      height='300px'
+                      theme='light'
+                      value='-18'
+                      max='60'
+                      steps='5'
+                      format='°C'
+                      // size='normal'
+                      height='320'
                     />
-                    <Typography align='center'>30°C</Typography>
+                    {/* <Typography align='center'>30°C</Typography> */}
                   </Grid>
                   <Grid item>
-                    <Typography
-                      align='center'
-                      style={{ marginBottom: '.25rem' }}
-                    >
+                    <Typography align='center' style={{ marginBottom: '1rem' }}>
                       Title
                     </Typography>
                     <Thermometer
-                      steps={8}
-                      minValue={-20}
-                      maxValue={60}
-                      height='300px'
+                      theme='light'
+                      value='30'
+                      max='60'
+                      steps='5'
+                      format='°C'
+                      // size='large'
+                      height='320'
                     />
-                    <Typography align='center'>30°C</Typography>
+                    {/* <Typography align='center'>30°C</Typography> */}
                   </Grid>
                 </Grid>
               </CardContent>
@@ -678,6 +680,15 @@ function Dashboard(props) {
               </CardContent>
             </Card>
           </Grid> */}
+        </Grid>
+        <Grid container style={{ marginTop: '3rem', marginBottom: '2rem' }}>
+          <Grid item>
+            <Card elevation={6}>
+              <CardContent style={{ marginTop: '2rem' }}>
+                <BiaxialLineChart width={800} height={400} />
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
       </main>
     </div>
