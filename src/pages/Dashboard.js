@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -36,17 +36,9 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import ReactSpeedometer from 'react-d3-speedometer';
-import ReactEnvironmentChart from 'react-environment-chart';
-import { Temperature } from 'react-environment-chart';
-import * as am4core from '@amcharts/amcharts4/core';
-import * as am4charts from '@amcharts/amcharts4/charts';
-import am4themes_animated from '@amcharts/amcharts4/themes/animated';
 import Compass from '../components/Compass';
-import ThermometerWrapper from '../components/ThermometerWrapper';
 import Thermometer from 'react-thermometer-component';
 import BiaxialLineChart from '../components/BiaxialLineChart';
-
-am4core.useTheme(am4themes_animated);
 
 const drawerWidth = 240;
 
@@ -111,14 +103,6 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(12),
     paddingLeft: theme.spacing(6),
   },
-  textfield: {
-    [theme.breakpoints.down('sm')]: {
-      width: '50%',
-    },
-    [theme.breakpoints.up('sm')]: {
-      width: '25%',
-    },
-  },
   paper: {
     padding: theme.spacing(2),
     textAlign: 'center',
@@ -137,13 +121,6 @@ const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
   },
-  fabStyle: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    marginBottom: theme.spacing(8),
-    marginRight: theme.spacing(8),
-  },
   expandMoreIconButtonStyle: {
     marginLeft: theme.spacing(0.5),
   },
@@ -158,13 +135,13 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(12),
   },
   cardGridContainerStyle: {
+    width: '100%',
     marginTop: theme.spacing(5),
     paddingLeft: theme.spacing(0.5),
     paddingRight: theme.spacing(4),
-    width: '100%',
   },
   card: {
-    minWidth: 200,
+    minWidth: 180,
     minHeight: 100,
   },
   chartGridContainerStyle: {
@@ -173,11 +150,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Dashboard(props) {
+function Dashboard() {
   const classes = useStyles();
   const theme = useTheme();
 
   const history = useHistory();
+  const serverUrl = 'http://localhost:5000/api/';
 
   const username = localStorage.getItem('username', 'Admin');
   const userToken = localStorage.getItem('userToken');
@@ -190,49 +168,171 @@ function Dashboard(props) {
 
   // Status and Time states
   const [status, setStatus] = useState(0);
-  const [timestamp, setTimestamp] = useState(Date.now());
+  const [timestamp, setTimestamp] = useState(undefined);
   const [isStatusLoading, setIsStatusLoading] = useState(false);
 
   // totalExport state
   const [totalExport, setTotalExport] = useState(0);
+  const [gaugePercent, setGaugePercent] = useState(0);
 
+  // temperatures states (ambient and module)
+  const [ambientTemp, setAmbientTemp] = useState(0);
+  const [moduleTemp, setModuleTemp] = useState(0);
+
+  // wind direction and speed states
+  const [windDirection, setWindDirection] = useState(0);
+  const [windSpeed, setWindSpeed] = useState(0);
+
+  // useEffect for jwtToken
   useEffect(() => {
+    console.log('useEffect for userToken');
+
     if (!userToken || userToken === '') {
       history.push('/login');
     }
-    console.log('useEffect running...');
+
+    console.log(userToken);
   }, [userToken, history]);
 
+  const getWindDirectionAndSpeed = () => {
+    console.log('getWindDirectionAndSpeed function called');
+    axios
+      .get(serverUrl + 'wind', {
+        headers: {
+          jwtToken: userToken,
+        },
+      })
+      .then((response) => {
+        console.log('wind: ', response.data);
+        const windDirectionStr = response.data.direction;
+        const windSpeedStr = response.data.speed;
+        console.log(windDirectionStr, windSpeedStr);
+        setWindDirection(Number(windDirectionStr).toFixed(0));
+        setWindSpeed(Number(windSpeedStr).toFixed(1));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getTemperatures = () => {
+    console.log('getTemperatures function called');
+    axios
+      .get(serverUrl + 'temperature', {
+        headers: {
+          jwtToken: userToken,
+        },
+      })
+      .then((response) => {
+        console.log('temperatures: ', response.data);
+        const ambientTempStr = response.data.ambientTemp;
+        const moduleTempStr = response.data.moduleTemp;
+        console.log(ambientTempStr);
+        setAmbientTemp(Number(ambientTempStr).toFixed(1));
+        setModuleTemp(Number(moduleTempStr).toFixed(1));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getTotalExport = () => {
+    console.log('getTotalExport function called');
+    axios
+      .get(serverUrl + 'gauge', {
+        headers: {
+          jwtToken: userToken,
+        },
+      })
+      .then((response) => {
+        console.log('totalExport: ', response.data.value);
+        const value = response.data.value;
+        setTotalExport(Number(value).toFixed(1));
+        // Dividing by 50 because upper limit is 50 MW
+        setGaugePercent(Number(value).toFixed(1) / 50);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getStatusAndTime = () => {
+    console.log('getStatusAndTime function called');
+    // setIsStatusLoading(true);
+    axios
+      .get(serverUrl + 'site', {
+        headers: {
+          jwtToken: userToken,
+        },
+      })
+      .then((response) => {
+        console.log('status: ', response.data.status);
+        console.log('time: ', response.data.time);
+        setStatus(response.data.status);
+        setTimestamp(response.data.time * 1000);
+        // setIsStatusLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        // setIsStatusLoading(false);
+      });
+  };
+
+  // useEffect for status and time
   useEffect(() => {
-    const interval = setInterval(getTotalExport, 5000);
+    console.log('useEffect for status and time');
+
+    getStatusAndTime();
+
+    // Fetch data every 5.5 seconds
+    const interval = setInterval(getStatusAndTime, 5500);
 
     return () => {
       clearInterval(interval);
     };
   }, []);
 
-  const getTotalExport = () => {
-    setTotalExport(5);
-    console.log(totalExport);
-  };
+  // // useEffect for totalExport
+  // useEffect(() => {
+  //   console.log('useEffect for totalExport');
 
-  const getStatusAndTime = () => {
-    setIsStatusLoading(true);
-    axios
-      .get('http://localhost:5000/api/site/', {
-        headers: {
-          jwtToken: userToken,
-        },
-      })
-      .then((response) => {
-        setStatus(response.data.status);
-        setTimestamp(response.data.timestamp);
-        setIsStatusLoading(false);
-      })
-      .catch((error) => {
-        setIsStatusLoading(false);
-      });
-  };
+  //   getTotalExport();
+
+  //   // Fetch data every 5.5 seconds
+  //   const interval = setInterval(getTotalExport, 5500);
+
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
+
+  // // useEffect for temperatures (ambient and module)
+  // useEffect(() => {
+  //   console.log('useEffect for temperatures (ambient and module)');
+
+  //   getTemperatures();
+
+  //   // Fetch data every 10 seconds
+  //   const interval = setInterval(getTemperatures, 10000);
+
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
+
+  // // useEffect for wind direction and speed
+  // useEffect(() => {
+  //   console.log('useEffect for wind direction and speed');
+
+  //   getWindDirectionAndSpeed();
+
+  //   // Fetch data every 10 seconds
+  //   const interval = setInterval(getWindDirectionAndSpeed, 10000);
+
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
 
   const handleDrawerOpen = () => {
     setOpenDrawer(true);
@@ -259,122 +359,15 @@ function Dashboard(props) {
   };
 
   const getDateAndTimeString = (timestamp) => {
-    const newDate = new Date(Date.now());
-    return `${newDate.toLocaleDateString()}  ${newDate.toLocaleTimeString()}`;
+    console.log(timestamp);
+    const date = new Date(timestamp);
+    // if (timestamp === undefined) {
+    //   return 'Loading...';
+    // } else {
+    //   return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    // }
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
   };
-
-  useLayoutEffect(() => {
-    // create chart
-    let chart = am4core.create('chartdiv', am4charts.GaugeChart);
-    // chart.exporting.menu = new am4core.ExportMenu();
-    // chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
-
-    chart.startAngle = -90;
-    chart.endAngle = 270;
-
-    let axis = chart.xAxes.push(new am4charts.ValueAxis());
-    axis.min = 0;
-    axis.max = 360;
-
-    axis.renderer.line.strokeWidth = 8;
-    axis.renderer.line.strokeOpacity = 1;
-    axis.renderer.line.stroke = am4core.color('#999');
-    axis.renderer.inside = true;
-
-    axis.renderer.axisFills.template.disabled = true;
-    axis.renderer.grid.template.disabled = true;
-    axis.renderer.ticks.template.disabled = false;
-    axis.renderer.ticks.template.length = 12;
-    axis.renderer.ticks.template.strokeOpacity = 1;
-
-    axis.renderer.labels.template.radius = 35;
-    axis.renderer.labels.template.disabled = true;
-    axis.renderer.ticks.template.disabled = true;
-
-    function createLabel(label, deg) {
-      let range = axis.axisRanges.create();
-      range.value = deg;
-      range.grid.disabled = true;
-      range.label.text = label;
-    }
-
-    createLabel('N', 0);
-    createLabel('', 22.5);
-    createLabel('NE', 45);
-    createLabel('', 67.5);
-    createLabel('E', 90);
-    createLabel('', 112.5);
-    createLabel('SE', 135);
-    createLabel('', 157.5);
-    createLabel('S', 180);
-    createLabel('', 202.5);
-    createLabel('SW', 225);
-    createLabel('', 247.5);
-    createLabel('W', 270);
-    createLabel('', 292.5);
-    createLabel('NW', 315);
-    createLabel('', 337.5);
-
-    // hands
-    let northHand = chart.hands.push(new am4charts.ClockHand());
-    northHand.radius = am4core.percent(80);
-    northHand.startWidth = 20;
-    northHand.endWidth = 1;
-    northHand.rotationDirection = 'clockWise';
-    northHand.pin.disabled = true;
-    northHand.zIndex = 0;
-    northHand.fill = am4core.color('#c00');
-    northHand.stroke = am4core.color('#c00');
-    northHand.value = 2;
-
-    let southHand = chart.hands.push(new am4charts.ClockHand());
-    southHand.radius = am4core.percent(80);
-    southHand.startWidth = 20;
-    southHand.endWidth = 1;
-    southHand.rotationDirection = 'clockWise';
-    southHand.pin.disabled = true;
-    southHand.zIndex = 0;
-    southHand.fill = am4core.color('#555');
-    southHand.stroke = am4core.color('#555');
-    southHand.value = 182;
-
-    // setInterval(rotateCompass, 5000);
-
-    function rotateCompass() {
-      let angle = am4core.utils.random(-100, 100);
-
-      // chart.startAngle = -90 + angle;
-      // chart.endAngle = 270 + angle;
-      // northHand.value = 0 - angle;
-      // southHand.value = 180 - angle;
-
-      chart.animate(
-        { property: 'startAngle', to: angle },
-        1000,
-        am4core.ease.cubicOut
-      );
-      chart.animate(
-        { property: 'endAngle', to: angle + 360 },
-        1000,
-        am4core.ease.cubicOut
-      );
-
-      northHand.animate(
-        { property: 'value', to: -90 - angle },
-        1000,
-        am4core.ease.cubicOut
-      );
-      southHand.animate(
-        { property: 'value', to: 90 - angle },
-        1000,
-        am4core.ease.cubicOut
-      );
-    }
-
-    return () => {
-      chart.dispose();
-    };
-  }, []);
 
   return (
     <div className={classes.root}>
@@ -483,37 +476,33 @@ function Dashboard(props) {
       </Drawer>
 
       <main className={classes.content}>
-        <Grid container spacing={4} style={{ paddingLeft: '.25rem' }}>
+        <Grid
+          container
+          spacing={4}
+          style={{ paddingLeft: '.25rem', paddingRight: '2rem' }}
+          alignItems='center'
+        >
           <Grid item>
             <Typography>Chhattisgarh</Typography>
           </Grid>
           <Grid item>
             <Typography>15 MW/h</Typography>
           </Grid>
-          <div className={classes.grow}></div>
-          {false ? (
-            <>
-              <div style={{ paddingTop: '1rem', marginRight: '6rem' }}>
-                <CircularProgress size={30} />
-              </div>
-            </>
-          ) : (
-            <>
-              <Grid item>
-                <Typography>
-                  {status === 0 ? (
-                    <span style={{ color: '#f44336' }}>Offline</span>
-                  ) : (
-                    <span style={{ color: '#4caf50' }}>Online</span>
-                  )}
-                </Typography>
-              </Grid>
-              <Grid item>
-                {timestamp && <Typography>{getDateAndTimeString()}</Typography>}
-              </Grid>
-              <div style={{ marginRight: '2rem' }}></div>
-            </>
-          )}
+          <Grid item className={classes.grow} />
+          <Grid item>
+            {status === 0 ? (
+              <Typography style={{ color: '#f44336' }}>Offline</Typography>
+            ) : (
+              <Typography style={{ color: '#4caf50' }}>Online</Typography>
+            )}
+          </Grid>
+          <Grid item>
+            {timestamp === undefined ? (
+              <CircularProgress size='1.5rem' />
+            ) : (
+              <Typography>{getDateAndTimeString(timestamp)}</Typography>
+            )}
+          </Grid>
         </Grid>
         <Grid
           container
