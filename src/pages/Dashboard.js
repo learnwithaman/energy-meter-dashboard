@@ -35,12 +35,275 @@ import GaugeChart from 'react-gauge-chart';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import ReactSpeedometer from 'react-d3-speedometer';
+import ReactSpeedomter from 'react-d3-speedometer';
+// import Thermometer from 'react-thermometer-chart';
 import Compass from '../components/Compass';
 import Thermometer from 'react-thermometer-component';
 import BiaxialLineChart from '../components/BiaxialLineChart';
+import BlockTable from '../components/BlockTable';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import Button from '@material-ui/core/Button';
+import { CSVLink, CSVDownload } from 'react-csv';
 
 const drawerWidth = 240;
+
+const graphDummyData = [
+  {
+    time: '05:03',
+    gti: '0.00',
+    ghi: '0.00',
+    pg: '0.00',
+  },
+  {
+    time: '05:18',
+    gti: '1.15',
+    ghi: '0.99',
+    pg: '0.00',
+  },
+  {
+    time: '05:33',
+    gti: '10.34',
+    ghi: '10.32',
+    pg: '0.00',
+  },
+  {
+    time: '05:48',
+    gti: '31.06',
+    ghi: '33.55',
+    pg: '0.57',
+  },
+  {
+    time: '06:03',
+    gti: '63.55',
+    ghi: '69.36',
+    pg: '1.28',
+  },
+  {
+    time: '06:18',
+    gti: '105.31',
+    ghi: '114.61',
+    pg: '2.27',
+  },
+  {
+    time: '06:33',
+    gti: '150.97',
+    ghi: '162.16',
+    pg: '3.39',
+  },
+  {
+    time: '06:49',
+    gti: '202.90',
+    ghi: '214.55',
+    pg: '4.77',
+  },
+  {
+    time: '07:04',
+    gti: '250.89',
+    ghi: '263.49',
+    pg: '6.07',
+  },
+  {
+    time: '07:19',
+    gti: '310.28',
+    ghi: '323.39',
+    pg: '7.65',
+  },
+  {
+    time: '07:34',
+    gti: '369.04',
+    ghi: '382.82',
+    pg: '9.34',
+  },
+  {
+    time: '07:49',
+    gti: '423.40',
+    ghi: '435.44',
+    pg: '10.78',
+  },
+  {
+    time: '08:04',
+    gti: '478.76',
+    ghi: '491.14',
+    pg: '12.12',
+  },
+  {
+    time: '08:19',
+    gti: '531.89',
+    ghi: '544.10',
+    pg: '13.38',
+  },
+  {
+    time: '08:34',
+    gti: '581.38',
+    ghi: '593.16',
+    pg: '14.62',
+  },
+  {
+    time: '08:49',
+    gti: '629.34',
+    ghi: '640.84',
+    pg: '15.77',
+  },
+  {
+    time: '09:04',
+    gti: '678.21',
+    ghi: '689.28',
+    pg: '16.78',
+  },
+  {
+    time: '09:19',
+    gti: '714.11',
+    ghi: '723.88',
+    pg: '17.68',
+  },
+  {
+    time: '09:34',
+    gti: '752.73',
+    ghi: '761.02',
+    pg: '18.44',
+  },
+  {
+    time: '09:49',
+    gti: '802.13',
+    ghi: '809.20',
+    pg: '19.23',
+  },
+  {
+    time: '10:04',
+    gti: '826.47',
+    ghi: '833.80',
+    pg: '19.79',
+  },
+  {
+    time: '10:19',
+    gti: '860.72',
+    ghi: '864.86',
+    pg: '20.33',
+  },
+  {
+    time: '10:34',
+    gti: '885.24',
+    ghi: '888.92',
+    pg: '20.80',
+  },
+  {
+    time: '10:49',
+    gti: '909.73',
+    ghi: '915.13',
+    pg: '21.23',
+  },
+  {
+    time: '11:04',
+    gti: '924.23',
+    ghi: '926.37',
+    pg: '21.66',
+  },
+  {
+    time: '11:19',
+    gti: '929.90',
+    ghi: '932.16',
+    pg: '21.03',
+  },
+  {
+    time: '11:34',
+    gti: '1011.88',
+    ghi: '1013.92',
+    pg: '21.65',
+  },
+  {
+    time: '11:49',
+    gti: '348.80',
+    ghi: '342.59',
+    pg: '9.90',
+  },
+  {
+    time: '12:04',
+    gti: '1029.75',
+    ghi: '1033.01',
+    pg: '15.77',
+  },
+  {
+    time: '12:19',
+    gti: '561.56',
+    ghi: '575.33',
+    pg: '22.29',
+  },
+  {
+    time: '12:34',
+    gti: '1013.05',
+    ghi: '1017.06',
+    pg: '23.25',
+  },
+  {
+    time: '12:49',
+    gti: '317.61',
+    ghi: '310.43',
+    pg: '12.02',
+  },
+  {
+    time: '13:05',
+    gti: '947.58',
+    ghi: '951.84',
+    pg: '20.10',
+  },
+  {
+    time: '13:20',
+    gti: '928.14',
+    ghi: '931.55',
+    pg: '16.12',
+  },
+  {
+    time: '13:35',
+    gti: '882.99',
+    ghi: '888.31',
+    pg: '21.05',
+  },
+  {
+    time: '13:50',
+    gti: '852.02',
+    ghi: '856.90',
+    pg: '20.33',
+  },
+  {
+    time: '14:05',
+    gti: '819.91',
+    ghi: '822.59',
+    pg: '20.20',
+  },
+  {
+    time: '14:20',
+    gti: '809.61',
+    ghi: '818.61',
+    pg: '20.09',
+  },
+  {
+    time: '15:31',
+    gti: '112.99',
+    ghi: '108.70',
+    pg: '3.09',
+  },
+  {
+    time: '15:33',
+    gti: '110.26',
+    ghi: '105.48',
+    pg: '3.05',
+  },
+  {
+    time: '15:48',
+    gti: '85.21',
+    ghi: '80.90',
+    pg: '2.34',
+  },
+  {
+    time: '17:27',
+    gti: '7.94',
+    ghi: '8.01',
+    pg: '0.07',
+  },
+];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -148,9 +411,12 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(0.5),
     marginTop: theme.spacing(6.5),
   },
+  formControl: {
+    minWidth: 120,
+  },
 }));
 
-function Dashboard() {
+function Dashboard(props) {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -169,7 +435,6 @@ function Dashboard() {
   // Status and Time states
   const [status, setStatus] = useState(0);
   const [timestamp, setTimestamp] = useState(undefined);
-  const [isStatusLoading, setIsStatusLoading] = useState(false);
 
   // totalExport state
   const [totalExport, setTotalExport] = useState(0);
@@ -183,6 +448,19 @@ function Dashboard() {
   const [windDirection, setWindDirection] = useState(0);
   const [windSpeed, setWindSpeed] = useState(0);
 
+  // irradiance / generation data
+  const [irradianceGenerationData, setIrradianceGenerationData] = useState([
+    {
+      time: '00:00',
+      gti: '0.00',
+      ghi: '0.00',
+      pg: '0.00',
+    },
+  ]);
+
+  // block select button state
+  const [block, setBlock] = React.useState(1);
+
   // useEffect for jwtToken
   useEffect(() => {
     console.log('useEffect for userToken');
@@ -192,7 +470,95 @@ function Dashboard() {
     }
 
     console.log(userToken);
-  }, [userToken, history]);
+  }, []);
+
+  // useEffect for status and time
+  useEffect(() => {
+    console.log('useEffect for status and time');
+
+    getStatusAndTime();
+
+    // Fetch data every 5.5 seconds
+    const interval = setInterval(getStatusAndTime, 5500);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  // useEffect for totalExport
+  useEffect(() => {
+    console.log('useEffect for totalExport');
+
+    getTotalExport();
+
+    // Fetch data every 5.5 seconds
+    const interval = setInterval(getTotalExport, 5500);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  // useEffect for temperatures (ambient and module)
+  useEffect(() => {
+    console.log('useEffect for temperatures (ambient and module)');
+
+    getTemperatures();
+
+    // Fetch data every 10 seconds
+    const interval = setInterval(getTemperatures, 10000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  // useEffect for wind direction and speed
+  useEffect(() => {
+    console.log('useEffect for wind direction and speed');
+
+    getWindDirectionAndSpeed();
+
+    // Fetch data every 10 seconds
+    const interval = setInterval(getWindDirectionAndSpeed, 10000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  // useEffect for wind direction and speed
+  useEffect(() => {
+    console.log('useEffect for wind direction and speed');
+
+    getIrradianceGenerationData();
+
+    // Fetch data every 10 minutes
+    const interval = setInterval(getIrradianceGenerationData, 60 * 1000 * 10);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  const getIrradianceGenerationData = () => {
+    console.log('getIrradianceGenerationData function called');
+    axios
+      .get(serverUrl + 'graph', {
+        headers: {
+          jwtToken: userToken,
+        },
+      })
+      .then((response) => {
+        console.log('i/g data: ', response.data);
+        setIrradianceGenerationData(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIrradianceGenerationData(graphDummyData);
+      });
+  };
 
   const getWindDirectionAndSpeed = () => {
     console.log('getWindDirectionAndSpeed function called');
@@ -258,7 +624,6 @@ function Dashboard() {
 
   const getStatusAndTime = () => {
     console.log('getStatusAndTime function called');
-    // setIsStatusLoading(true);
     axios
       .get(serverUrl + 'site', {
         headers: {
@@ -270,69 +635,28 @@ function Dashboard() {
         console.log('time: ', response.data.time);
         setStatus(response.data.status);
         setTimestamp(response.data.time * 1000);
-        // setIsStatusLoading(false);
       })
       .catch((error) => {
         console.log(error);
-        // setIsStatusLoading(false);
       });
   };
 
-  // useEffect for status and time
-  useEffect(() => {
-    console.log('useEffect for status and time');
+  const handleBlockChange = (event) => {
+    setBlock(event.target.value);
+  };
 
-    getStatusAndTime();
+  const handleDownloadCSV = (event) => {
+    const rows = [
+      ['name1', 'city1', 'some other info'],
+      ['name2', 'city2', 'more info'],
+    ];
 
-    // Fetch data every 5.5 seconds
-    const interval = setInterval(getStatusAndTime, 5500);
+    let csvContent =
+      'data:text/csv;charset=utf-8,' + rows.map((e) => e.join(',')).join('\n');
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
-
-  // // useEffect for totalExport
-  // useEffect(() => {
-  //   console.log('useEffect for totalExport');
-
-  //   getTotalExport();
-
-  //   // Fetch data every 5.5 seconds
-  //   const interval = setInterval(getTotalExport, 5500);
-
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, []);
-
-  // // useEffect for temperatures (ambient and module)
-  // useEffect(() => {
-  //   console.log('useEffect for temperatures (ambient and module)');
-
-  //   getTemperatures();
-
-  //   // Fetch data every 10 seconds
-  //   const interval = setInterval(getTemperatures, 10000);
-
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, []);
-
-  // // useEffect for wind direction and speed
-  // useEffect(() => {
-  //   console.log('useEffect for wind direction and speed');
-
-  //   getWindDirectionAndSpeed();
-
-  //   // Fetch data every 10 seconds
-  //   const interval = setInterval(getWindDirectionAndSpeed, 10000);
-
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, []);
+    let encodedUri = encodeURI(csvContent);
+    window.open(encodedUri);
+  };
 
   const handleDrawerOpen = () => {
     setOpenDrawer(true);
@@ -359,13 +683,7 @@ function Dashboard() {
   };
 
   const getDateAndTimeString = (timestamp) => {
-    console.log(timestamp);
     const date = new Date(timestamp);
-    // if (timestamp === undefined) {
-    //   return 'Loading...';
-    // } else {
-    //   return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-    // }
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
   };
 
@@ -480,13 +798,12 @@ function Dashboard() {
           container
           spacing={4}
           style={{ paddingLeft: '.25rem', paddingRight: '2rem' }}
-          alignItems='center'
         >
           <Grid item>
             <Typography>Chhattisgarh</Typography>
           </Grid>
           <Grid item>
-            <Typography>15 MW/h</Typography>
+            <Typography>30 MW</Typography>
           </Grid>
           <Grid item className={classes.grow} />
           <Grid item>
@@ -498,7 +815,10 @@ function Dashboard() {
           </Grid>
           <Grid item>
             {timestamp === undefined ? (
-              <CircularProgress size='1.5rem' />
+              <CircularProgress
+                size='1.5rem'
+                style={{ marginRight: '.5rem' }}
+              />
             ) : (
               <Typography>{getDateAndTimeString(timestamp)}</Typography>
             )}
@@ -510,7 +830,7 @@ function Dashboard() {
           justify='space-between'
           alignItems='center'
         >
-          <Grid>
+          <Grid item>
             <Card className={classes.card} elevation={4}>
               <CardContent>
                 <Typography>Abc</Typography>
@@ -568,41 +888,25 @@ function Dashboard() {
                   Total Export
                 </Typography>
                 {/* <GaugeChart
-                  id='gauge-chart2'
+                  id='gauge-chart1'
+                  marginInPercent={0.02}
                   nrOfLevels={25}
                   colors={['#ffeb3b', '#ff9100']}
                   textColor='#5393ff'
                   needleColor='#757575'
                   needleBaseColor='#757575'
                   arcWidth={0.3}
-                  percent={0.74}
-                  formatTextValue={(value) => `${totalExport}  MW`}
-                  marginInPercent={0.02}
-                /> */}
-                <ReactSpeedometer
+                  percent={gaugePercent}
+                  formatTextValue={value =>  `${totalExport} MW`} /> */}
+                <ReactSpeedomter
                   minValue={0}
                   maxValue={50}
-                  value={22}
+                  value={totalExport}
                   startColor='#91ff35'
                   endColor='#4caf50'
                   width={400}
-                  currentValueText='22 MW'
+                  currentValueText={`${totalExport} MW`}
                 />
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item>
-            <Card elevation={6}>
-              <CardContent>
-                <Typography style={{ marginBottom: '1.5rem' }} align='center'>
-                  Wind direction and speed
-                </Typography>
-                <div style={{ marginLeft: '1.5rem', marginRight: '1.5rem' }}>
-                  <Compass size={170} rotate={220} />
-                </div>
-                <Typography style={{ marginTop: '1.5rem' }} align='center'>
-                  220°, 100 km/h
-                </Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -610,73 +914,158 @@ function Dashboard() {
             <Card
               elevation={6}
               style={{
-                height: '400px',
-                paddingLeft: '1.5rem',
-                paddingRight: '1.5rem',
+                height: '310px',
+                paddingLeft: '1rem',
+                paddingRight: '1rem',
               }}
             >
               <CardContent>
                 <Grid container spacing={3}>
                   <Grid item>
-                    <Typography align='center' style={{ marginBottom: '1rem' }}>
-                      Title
+                    <Typography
+                      align='center'
+                      style={{ marginBottom: '.75rem' }}
+                    >
+                      Ambient
                     </Typography>
                     <Thermometer
                       theme='light'
-                      value='-18'
-                      max='60'
+                      value={String(ambientTemp)}
+                      max='75'
                       steps='5'
                       format='°C'
-                      // size='normal'
-                      height='320'
+                      height='210'
                     />
-                    {/* <Typography align='center'>30°C</Typography> */}
+                    <Typography align='center' style={{ marginTop: '.75rem' }}>
+                      {String(ambientTemp)}°C
+                    </Typography>
                   </Grid>
                   <Grid item>
-                    <Typography align='center' style={{ marginBottom: '1rem' }}>
-                      Title
+                    <Typography
+                      align='center'
+                      style={{ marginBottom: '.75rem' }}
+                    >
+                      Module
                     </Typography>
                     <Thermometer
                       theme='light'
-                      value='30'
-                      max='60'
+                      value={String(moduleTemp)}
+                      max='75'
                       steps='5'
                       format='°C'
-                      // size='large'
-                      height='320'
+                      height='210'
                     />
-                    {/* <Typography align='center'>30°C</Typography> */}
+                    <Typography align='center' style={{ marginTop: '.75rem' }}>
+                      {String(moduleTemp)}°C
+                    </Typography>
                   </Grid>
                 </Grid>
               </CardContent>
             </Card>
           </Grid>
-          {/* <Grid item>
-            <Card elevation={6}>
-              <CardContent>
-                <Typography>Title</Typography>
-                <div
-                  id='chartdiv'
-                  style={{ height: '250px', width: '250px' }}
-                />
-              </CardContent>
-            </Card>
-          </Grid> */}
-          {/* <Grid item>
-            <Card elevation={6}>
-              <CardContent>
-                <Typography>Abc</Typography>
-              </CardContent>
-            </Card>
-          </Grid> */}
-        </Grid>
-        <Grid container style={{ marginTop: '3rem', marginBottom: '2rem' }}>
           <Grid item>
-            <Card elevation={6}>
-              <CardContent style={{ marginTop: '2rem' }}>
-                <BiaxialLineChart width={800} height={400} />
+            <Card
+              elevation={6}
+              style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
+            >
+              <CardContent>
+                <Typography align='center' style={{ marginBottom: '1.5rem' }}>
+                  Wind <strong>direction</strong> and{' '}
+                  <span style={{ color: 'blue' }}>speed</span>
+                </Typography>
+                <div style={{ textAlign: 'center' }}>
+                  <Compass size={165} rotate={windDirection} />
+                </div>
+                <Typography align='center' style={{ marginTop: '1.5rem' }}>
+                  <strong>{String(windDirection)}°</strong>
+                  <span style={{ marginLeft: '1rem', color: 'blue' }}>
+                    {String(windSpeed)} m/s
+                  </span>
+                </Typography>
               </CardContent>
             </Card>
+          </Grid>
+        </Grid>
+        <Grid
+          container
+          style={{
+            marginTop: '4rem',
+            marginBottom: '2rem',
+            paddingRight: '2.5rem',
+          }}
+          className={classes.grow}
+        >
+          <Grid item style={{ width: '100%', height: '80vh' }}>
+            <Card elevation={6} style={{ width: '100%', height: '100%' }}>
+              <CardContent style={{ width: '100%', height: '100%' }}>
+                <Typography
+                  variant='h6'
+                  style={{
+                    marginLeft: '2rem',
+                    marginTop: '.5rem',
+                    marginBottom: '2rem',
+                  }}
+                >
+                  Irradiance / Generation
+                </Typography>
+                <div style={{ width: '100%', height: '85%' }}>
+                  <BiaxialLineChart
+                    width={600}
+                    height={300}
+                    data={irradianceGenerationData}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+        <Grid
+          container
+          style={{
+            marginTop: '3rem',
+            marginBottom: '4rem',
+            paddingRight: '2.5rem',
+          }}
+        >
+          <Grid item xs={7}>
+            <Grid
+              container
+              spacing={2}
+              alignItems='center'
+              style={{ marginBottom: '.5rem' }}
+            >
+              <Grid item>
+                <Typography style={{ marginLeft: '.25rem' }}>
+                  Selected Block:{' '}
+                </Typography>
+              </Grid>
+              <Grid item>
+                <FormControl className={classes.formControl}>
+                  <Select value={block} onChange={handleBlockChange}>
+                    <MenuItem value={1}>BO1</MenuItem>
+                    <MenuItem value={2}>B02</MenuItem>
+                    <MenuItem value={3}>B03</MenuItem>
+                    <MenuItem value={4}>B04</MenuItem>
+                    <MenuItem value={5}>B05</MenuItem>
+                    <MenuItem value={6}>B06</MenuItem>
+                    <MenuItem value={7}>B07</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item className={classes.grow}></Grid>
+              <Grid item>
+                <Button variant='outlined'>
+                  <CSVLink
+                    filename={'my-file.csv'}
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                    data={graphDummyData}
+                  >
+                    Download CSV
+                  </CSVLink>
+                </Button>
+              </Grid>
+            </Grid>
+            <BlockTable />
           </Grid>
         </Grid>
       </main>
