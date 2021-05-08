@@ -59,10 +59,10 @@ export default function CustomizedTables() {
         <TableHead>
           <TableRow>
             <StyledTableCell></StyledTableCell>
-            <StyledTableCell>Inv 1</StyledTableCell>
-            <StyledTableCell>Inv 2</StyledTableCell>
-            <StyledTableCell>Inv 2</StyledTableCell>
-            <StyledTableCell>Inv 3</StyledTableCell>
+            <StyledTableCell align='left'>Inv 1</StyledTableCell>
+            <StyledTableCell align='left'>Inv 2</StyledTableCell>
+            <StyledTableCell align='left'>Inv 2</StyledTableCell>
+            <StyledTableCell align='left'>Inv 3</StyledTableCell>
             {/* <StyledTableCell align='right'>L1 V</StyledTableCell>
             <StyledTableCell align='right'>L2 V</StyledTableCell>
             <StyledTableCell align='right'>L3 V</StyledTableCell>
@@ -80,7 +80,7 @@ export default function CustomizedTables() {
           {rows.map((row) => (
             <StyledTableRow key={row.name}>
               <StyledTableCell component='th' scope='row'>
-                {row.name}
+                <strong>{row.name}</strong>
               </StyledTableCell>
               <StyledTableCell>{row.calories}</StyledTableCell>
               <StyledTableCell>{row.fat}</StyledTableCell>
