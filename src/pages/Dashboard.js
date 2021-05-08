@@ -889,7 +889,7 @@ function Dashboard(props) {
                     />
                   </Grid>
                   <Grid item>
-                    <Grid container>
+                    <Grid container justify='flex-end'>
                       <Typography>Revenue</Typography>
                     </Grid>
                     <Grid container justify='flex-end'>
@@ -921,7 +921,7 @@ function Dashboard(props) {
                     />
                   </Grid>
                   <Grid item>
-                    <Grid container>
+                    <Grid container justify='flex-end'>
                       <Typography>Peak Power</Typography>
                     </Grid>
                     <Grid container justify='flex-end'>
@@ -953,7 +953,7 @@ function Dashboard(props) {
                     />
                   </Grid>
                   <Grid item>
-                    <Grid container>
+                    <Grid container justify='flex-end'>
                       <Typography>Plant PR</Typography>
                     </Grid>
                     <Grid container justify='flex-end'>
@@ -985,7 +985,7 @@ function Dashboard(props) {
                     />
                   </Grid>
                   <Grid item>
-                    <Grid container>
+                    <Grid container justify='flex-end'>
                       <Typography>Grid Availability</Typography>
                     </Grid>
                     <Grid container justify='flex-end'>
