@@ -42,11 +42,22 @@ const rows = [
   createData('IGBT Temp', 356, 16.0, 49, 3.9),
   createData('AC kwh Day', 356, 16.0, 49, 3.9),
   createData('DC kwh Day', 356, 16.0, 49, 3.9),
+  createData('L1 V', 159, 6.0, 24, 4.0),
+  createData('L2 V', 237, 9.0, 37, 4.3),
+  createData('L3 V', 262, 16.0, 24, 6.0),
+  createData('L1 I', 305, 3.7, 67, 4.3),
+  createData('L2 I', 356, 16.0, 49, 3.9),
+  createData('L3 I', 356, 16.0, 49, 3.9),
+  createData('Freq', 356, 16.0, 49, 3.9),
+  createData('PR', 356, 16.0, 49, 3.9),
+  createData('IGBT Temp', 356, 16.0, 49, 3.9),
+  createData('AC kwh Day', 356, 16.0, 49, 3.9),
+  createData('DC kwh Day', 356, 16.0, 49, 3.9),
 ];
 
 const useStyles = makeStyles({
   table: {
-    minWidth: 700,
+    // minWidth: 700,
   },
 });
 
@@ -54,7 +65,7 @@ export default function CustomizedTables() {
   const classes = useStyles();
 
   return (
-    <TableContainer component={Paper} elevation={6}>
+    <TableContainer component={Paper} elevation={6} style={{ maxHeight: 600 }}>
       <Table className={classes.table} aria-label='customized table'>
         <TableHead>
           <TableRow>
@@ -63,17 +74,6 @@ export default function CustomizedTables() {
             <StyledTableCell align='left'>Inv 2</StyledTableCell>
             <StyledTableCell align='left'>Inv 2</StyledTableCell>
             <StyledTableCell align='left'>Inv 3</StyledTableCell>
-            {/* <StyledTableCell align='right'>L1 V</StyledTableCell>
-            <StyledTableCell align='right'>L2 V</StyledTableCell>
-            <StyledTableCell align='right'>L3 V</StyledTableCell>
-            <StyledTableCell align='right'>L1 I</StyledTableCell>
-            <StyledTableCell align='right'>L2 I</StyledTableCell>
-            <StyledTableCell align='right'>L3 I</StyledTableCell>
-            <StyledTableCell align='right'>Freq</StyledTableCell>
-            <StyledTableCell align='right'>PR</StyledTableCell>
-            <StyledTableCell align='right'>IGBT Temp</StyledTableCell>
-            <StyledTableCell align='right'>AC kwh Day</StyledTableCell>
-            <StyledTableCell align='right'>DC kwh Day</StyledTableCell> */}
           </TableRow>
         </TableHead>
         <TableBody>

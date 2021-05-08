@@ -47,6 +47,9 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
 import { CSVLink, CSVDownload } from 'react-csv';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardMedia from '@material-ui/core/CardMedia';
+import createTypography from '@material-ui/core/styles/createTypography';
 
 const drawerWidth = 240;
 
@@ -404,8 +407,8 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(4),
   },
   card: {
-    minWidth: 180,
-    minHeight: 100,
+    // minWidth: 180,
+    // minHeight: 80,
   },
   chartGridContainerStyle: {
     marginLeft: theme.spacing(0.5),
@@ -798,19 +801,22 @@ function Dashboard(props) {
           container
           spacing={4}
           style={{ paddingLeft: '.25rem', paddingRight: '2rem' }}
+          alignItems='center'
         >
           <Grid item>
-            <Typography>Chhattisgarh</Typography>
+            <span style={{ fontSize: '1.25rem' }}>Chhattisgarh</span>
           </Grid>
           <Grid item>
-            <Typography>30 MW</Typography>
+            <span style={{ fontSize: '1.25rem' }}>30 MW</span>
           </Grid>
           <Grid item className={classes.grow} />
           <Grid item>
             {status === 0 ? (
-              <Typography style={{ color: '#f44336' }}>Offline</Typography>
+              <span style={{ fontSize: '1rem', color: '#f44336' }}>
+                Offline
+              </span>
             ) : (
-              <Typography style={{ color: '#4caf50' }}>Online</Typography>
+              <span style={{ fontSize: '1rem', color: '#4caf50' }}>Online</span>
             )}
           </Grid>
           <Grid item>
@@ -820,7 +826,9 @@ function Dashboard(props) {
                 style={{ marginRight: '.5rem' }}
               />
             ) : (
-              <Typography>{getDateAndTimeString(timestamp)}</Typography>
+              <span style={{ fontSize: '1rem' }}>
+                {getDateAndTimeString(timestamp)}
+              </span>
             )}
           </Grid>
         </Grid>
@@ -832,36 +840,161 @@ function Dashboard(props) {
         >
           <Grid item>
             <Card className={classes.card} elevation={4}>
-              <CardContent>
-                <Typography>Abc</Typography>
+              <CardContent
+                style={{
+                  paddingTop: '.5rem',
+                  paddingRight: '1rem',
+                  paddingBottom: '.5rem',
+                  paddingLeft: '1rem',
+                }}
+              >
+                <Grid container alignItems='center' spacing={1}>
+                  <Grid item>
+                    <img
+                      src='/static/images/power-generation.png'
+                      alt='power'
+                      style={{ width: 64, height: 64 }}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Grid container>
+                      <Typography>Power Generation</Typography>
+                    </Grid>
+                    <Grid container justify='flex-end'>
+                      <Grid item>
+                        <Typography color='primary'>100 KWH</Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
               </CardContent>
             </Card>
           </Grid>
           <Grid item>
             <Card className={classes.card} elevation={4}>
-              <CardContent>
-                <Typography>Abc</Typography>
+              <CardContent
+                style={{
+                  paddingTop: '.5rem',
+                  paddingRight: '1rem',
+                  paddingBottom: '.5rem',
+                  paddingLeft: '1rem',
+                }}
+              >
+                <Grid container alignItems='center' spacing={1}>
+                  <Grid item>
+                    <img
+                      src='/static/images/power-generation.png'
+                      alt='power'
+                      style={{ width: 64, height: 64 }}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Grid container>
+                      <Typography>Revenue</Typography>
+                    </Grid>
+                    <Grid container justify='flex-end'>
+                      <Grid item>
+                        <Typography color='primary'>100 KWH</Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
               </CardContent>
             </Card>
           </Grid>
           <Grid item>
             <Card className={classes.card} elevation={4}>
-              <CardContent>
-                <Typography>Abc</Typography>
+              <CardContent
+                style={{
+                  paddingTop: '.5rem',
+                  paddingRight: '1rem',
+                  paddingBottom: '.5rem',
+                  paddingLeft: '1rem',
+                }}
+              >
+                <Grid container alignItems='center' spacing={1}>
+                  <Grid item>
+                    <img
+                      src='/static/images/power-generation.png'
+                      alt='power'
+                      style={{ width: 64, height: 64 }}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Grid container>
+                      <Typography>Peak Power</Typography>
+                    </Grid>
+                    <Grid container justify='flex-end'>
+                      <Grid item>
+                        <Typography color='primary'>100 KWH</Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
               </CardContent>
             </Card>
           </Grid>
           <Grid item>
             <Card className={classes.card} elevation={4}>
-              <CardContent>
-                <Typography>Abc</Typography>
+              <CardContent
+                style={{
+                  paddingTop: '.5rem',
+                  paddingRight: '1rem',
+                  paddingBottom: '.5rem',
+                  paddingLeft: '1rem',
+                }}
+              >
+                <Grid container alignItems='center' spacing={1}>
+                  <Grid item>
+                    <img
+                      src='/static/images/power-generation.png'
+                      alt='power'
+                      style={{ width: 64, height: 64 }}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Grid container>
+                      <Typography>Plant PR</Typography>
+                    </Grid>
+                    <Grid container justify='flex-end'>
+                      <Grid item>
+                        <Typography color='primary'>100 KWH</Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
               </CardContent>
             </Card>
           </Grid>
           <Grid item>
             <Card className={classes.card} elevation={4}>
-              <CardContent>
-                <Typography>Abc</Typography>
+              <CardContent
+                style={{
+                  paddingTop: '.5rem',
+                  paddingRight: '1rem',
+                  paddingBottom: '.5rem',
+                  paddingLeft: '1rem',
+                }}
+              >
+                <Grid container alignItems='center' spacing={1}>
+                  <Grid item>
+                    <img
+                      src='/static/images/power-generation.png'
+                      alt='power'
+                      style={{ width: 64, height: 64 }}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Grid container>
+                      <Typography>Grid Availability</Typography>
+                    </Grid>
+                    <Grid container justify='flex-end'>
+                      <Grid item>
+                        <Typography color='primary'>100 KWH</Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
               </CardContent>
             </Card>
           </Grid>
@@ -989,7 +1122,7 @@ function Dashboard(props) {
         <Grid
           container
           style={{
-            marginTop: '4rem',
+            marginTop: '3.5rem',
             marginBottom: '2rem',
             paddingRight: '2.5rem',
           }}
