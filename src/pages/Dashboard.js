@@ -1,3 +1,4 @@
+import 'date-fns';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import clsx from 'clsx';
@@ -47,266 +48,17 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
 import { CSVLink, CSVDownload } from 'react-csv';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import createTypography from '@material-ui/core/styles/createTypography';
+import DescriptionIcon from '@material-ui/icons/Description';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import CardActions from '@material-ui/core/CardActions';
+import Alert from '@material-ui/lab/Alert';
+import WarningIcon from '@material-ui/icons/Warning';
 
 const drawerWidth = 240;
-
-const graphDummyData = [
-  {
-    time: '05:03',
-    gti: '0.00',
-    ghi: '0.00',
-    pg: '0.00',
-  },
-  {
-    time: '05:18',
-    gti: '1.15',
-    ghi: '0.99',
-    pg: '0.00',
-  },
-  {
-    time: '05:33',
-    gti: '10.34',
-    ghi: '10.32',
-    pg: '0.00',
-  },
-  {
-    time: '05:48',
-    gti: '31.06',
-    ghi: '33.55',
-    pg: '0.57',
-  },
-  {
-    time: '06:03',
-    gti: '63.55',
-    ghi: '69.36',
-    pg: '1.28',
-  },
-  {
-    time: '06:18',
-    gti: '105.31',
-    ghi: '114.61',
-    pg: '2.27',
-  },
-  {
-    time: '06:33',
-    gti: '150.97',
-    ghi: '162.16',
-    pg: '3.39',
-  },
-  {
-    time: '06:49',
-    gti: '202.90',
-    ghi: '214.55',
-    pg: '4.77',
-  },
-  {
-    time: '07:04',
-    gti: '250.89',
-    ghi: '263.49',
-    pg: '6.07',
-  },
-  {
-    time: '07:19',
-    gti: '310.28',
-    ghi: '323.39',
-    pg: '7.65',
-  },
-  {
-    time: '07:34',
-    gti: '369.04',
-    ghi: '382.82',
-    pg: '9.34',
-  },
-  {
-    time: '07:49',
-    gti: '423.40',
-    ghi: '435.44',
-    pg: '10.78',
-  },
-  {
-    time: '08:04',
-    gti: '478.76',
-    ghi: '491.14',
-    pg: '12.12',
-  },
-  {
-    time: '08:19',
-    gti: '531.89',
-    ghi: '544.10',
-    pg: '13.38',
-  },
-  {
-    time: '08:34',
-    gti: '581.38',
-    ghi: '593.16',
-    pg: '14.62',
-  },
-  {
-    time: '08:49',
-    gti: '629.34',
-    ghi: '640.84',
-    pg: '15.77',
-  },
-  {
-    time: '09:04',
-    gti: '678.21',
-    ghi: '689.28',
-    pg: '16.78',
-  },
-  {
-    time: '09:19',
-    gti: '714.11',
-    ghi: '723.88',
-    pg: '17.68',
-  },
-  {
-    time: '09:34',
-    gti: '752.73',
-    ghi: '761.02',
-    pg: '18.44',
-  },
-  {
-    time: '09:49',
-    gti: '802.13',
-    ghi: '809.20',
-    pg: '19.23',
-  },
-  {
-    time: '10:04',
-    gti: '826.47',
-    ghi: '833.80',
-    pg: '19.79',
-  },
-  {
-    time: '10:19',
-    gti: '860.72',
-    ghi: '864.86',
-    pg: '20.33',
-  },
-  {
-    time: '10:34',
-    gti: '885.24',
-    ghi: '888.92',
-    pg: '20.80',
-  },
-  {
-    time: '10:49',
-    gti: '909.73',
-    ghi: '915.13',
-    pg: '21.23',
-  },
-  {
-    time: '11:04',
-    gti: '924.23',
-    ghi: '926.37',
-    pg: '21.66',
-  },
-  {
-    time: '11:19',
-    gti: '929.90',
-    ghi: '932.16',
-    pg: '21.03',
-  },
-  {
-    time: '11:34',
-    gti: '1011.88',
-    ghi: '1013.92',
-    pg: '21.65',
-  },
-  {
-    time: '11:49',
-    gti: '348.80',
-    ghi: '342.59',
-    pg: '9.90',
-  },
-  {
-    time: '12:04',
-    gti: '1029.75',
-    ghi: '1033.01',
-    pg: '15.77',
-  },
-  {
-    time: '12:19',
-    gti: '561.56',
-    ghi: '575.33',
-    pg: '22.29',
-  },
-  {
-    time: '12:34',
-    gti: '1013.05',
-    ghi: '1017.06',
-    pg: '23.25',
-  },
-  {
-    time: '12:49',
-    gti: '317.61',
-    ghi: '310.43',
-    pg: '12.02',
-  },
-  {
-    time: '13:05',
-    gti: '947.58',
-    ghi: '951.84',
-    pg: '20.10',
-  },
-  {
-    time: '13:20',
-    gti: '928.14',
-    ghi: '931.55',
-    pg: '16.12',
-  },
-  {
-    time: '13:35',
-    gti: '882.99',
-    ghi: '888.31',
-    pg: '21.05',
-  },
-  {
-    time: '13:50',
-    gti: '852.02',
-    ghi: '856.90',
-    pg: '20.33',
-  },
-  {
-    time: '14:05',
-    gti: '819.91',
-    ghi: '822.59',
-    pg: '20.20',
-  },
-  {
-    time: '14:20',
-    gti: '809.61',
-    ghi: '818.61',
-    pg: '20.09',
-  },
-  {
-    time: '15:31',
-    gti: '112.99',
-    ghi: '108.70',
-    pg: '3.09',
-  },
-  {
-    time: '15:33',
-    gti: '110.26',
-    ghi: '105.48',
-    pg: '3.05',
-  },
-  {
-    time: '15:48',
-    gti: '85.21',
-    ghi: '80.90',
-    pg: '2.34',
-  },
-  {
-    time: '17:27',
-    gti: '7.94',
-    ghi: '8.01',
-    pg: '0.07',
-  },
-];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -407,8 +159,7 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(4),
   },
   card: {
-    // minWidth: 180,
-    // minHeight: 80,
+    height: 80,
   },
   chartGridContainerStyle: {
     marginLeft: theme.spacing(0.5),
@@ -417,6 +168,10 @@ const useStyles = makeStyles((theme) => ({
   formControl: {
     minWidth: 120,
   },
+  modalCardStyle: {
+    width: 260,
+    height: 'fit-content',
+  },
 }));
 
 function Dashboard(props) {
@@ -424,7 +179,8 @@ function Dashboard(props) {
   const theme = useTheme();
 
   const history = useHistory();
-  const serverUrl = 'http://localhost:5000/api/';
+  const location = useLocation();
+  const serverUrl = 'http://10.10.0.102:5000/api/';
 
   const username = localStorage.getItem('username', 'Admin');
   const userToken = localStorage.getItem('userToken');
@@ -464,7 +220,27 @@ function Dashboard(props) {
   // block select button state
   const [block, setBlock] = React.useState(1);
 
-  // useEffect for jwtToken
+  // arrayOfObjects from Inverter Values
+  const [arrayOfObjects, setArrayOfObjects] = useState([]);
+
+  // cards/ boxes states (generation, revenue, peak power, plant pr, and grid availability)
+  const [cardsValues, setCardsValues] = useState({});
+
+  // downloadExcelModal states
+  const [openDownloadExcelModal, setOpenDownloadExcelModal] = useState(false);
+
+  // From and To dates for Excel
+  const [excelFromDate, setExcelFromDate] = useState(
+    new Date('2021-01-01T00:00:00')
+  );
+  const [excelToDate, setExcelToDate] = useState(Date.now());
+
+  // Show or hide download excel alert
+  const [displayDownloadExcelAlert, setDisplayDownloadExcelAlert] = useState(
+    false
+  );
+
+  // useEffect for jwtTokens
   useEffect(() => {
     console.log('useEffect for userToken');
 
@@ -545,6 +321,97 @@ function Dashboard(props) {
     };
   }, []);
 
+  // useEffect for inverter values
+  useEffect(() => {
+    console.log('useEffect for inverter values');
+
+    getInverterValues(1);
+  }, []);
+
+  // useEffect for cards/ boxes
+  useEffect(() => {
+    console.log('useEffect for cards/ boxes running');
+
+    getCardsValues();
+
+    // Fetch data every 10 minutes
+    const interval = setInterval(getCardsValues, 60 * 1000 * 10);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  const getCardsValues = () => {
+    console.log('getCardsValues function called');
+    axios
+      .get(serverUrl + 'boxes', {
+        headers: {
+          jwtToken: userToken,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        setCardsValues(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getInverterValues = (block) => {
+    console.log('getInverterValues function called');
+    axios
+      .get(serverUrl + 'grid/' + 'B0' + block, {
+        headers: {
+          jwtToken: userToken,
+        },
+      })
+      .then((response) => {
+        console.log('block' + 'B0' + block + ':', response.data);
+        // format the data
+        formatInverterValues(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const formatInverterValues = (data) => {
+    let arrayOfObjectsX = [];
+
+    let arrayFromObject = Object.entries(data);
+
+    const heading = [
+      'L1 V',
+      'L2 V',
+      'L3 V',
+      'L1 I',
+      'L2 I',
+      'L3 I',
+      'Freq',
+      'PR',
+      'IGBT Temp',
+      'AC kwh Day',
+      'DC kwh Day',
+    ];
+
+    for (let i = 0; i < 11; i++) {
+      arrayOfObjectsX.push({
+        heading: heading[i],
+        inv1: arrayFromObject[i][1],
+        inv2: arrayFromObject[i + 11][1],
+        inv3: arrayFromObject[i + 22][1],
+        inv4: arrayFromObject[i + 33][1],
+      });
+    }
+
+    console.log(arrayOfObjectsX);
+
+    setArrayOfObjects([...arrayOfObjectsX]);
+    console.log(arrayOfObjects);
+  };
+
   const getIrradianceGenerationData = () => {
     console.log('getIrradianceGenerationData function called');
     axios
@@ -559,7 +426,6 @@ function Dashboard(props) {
       })
       .catch((error) => {
         console.log(error);
-        setIrradianceGenerationData(graphDummyData);
       });
   };
 
@@ -644,21 +510,21 @@ function Dashboard(props) {
       });
   };
 
-  const handleBlockChange = (event) => {
-    setBlock(event.target.value);
+  const getFormattedRevenue = (revenue) => {
+    const revenueNum = Number(revenue).toFixed(0);
+    const revenueStr = revenueNum;
+    let lastThree = revenueStr.substring(revenueStr.length - 3);
+    let otherNumbers = revenueStr.substring(0, revenueStr.length - 3);
+    if (otherNumbers !== '') {
+      lastThree = ',' + lastThree;
+    }
+    let res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+    return res;
   };
 
-  const handleDownloadCSV = (event) => {
-    const rows = [
-      ['name1', 'city1', 'some other info'],
-      ['name2', 'city2', 'more info'],
-    ];
-
-    let csvContent =
-      'data:text/csv;charset=utf-8,' + rows.map((e) => e.join(',')).join('\n');
-
-    let encodedUri = encodeURI(csvContent);
-    window.open(encodedUri);
+  const handleBlockChange = (event) => {
+    setBlock(event.target.value);
+    getInverterValues(event.target.value);
   };
 
   const handleDrawerOpen = () => {
@@ -688,6 +554,56 @@ function Dashboard(props) {
   const getDateAndTimeString = (timestamp) => {
     const date = new Date(timestamp);
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+  };
+
+  const handleSideMenuClick = (index) => {
+    if (index === 1) {
+      setOpenDownloadExcelModal(true);
+      compareExcelDates(excelFromDate, excelToDate);
+    }
+  };
+
+  const handleDownloadExcelModalClose = () => {
+    setOpenDownloadExcelModal(false);
+  };
+
+  const handleExcelFromDate = (date) => {
+    console.log(date);
+    setExcelFromDate(date);
+  };
+
+  const handleExcelToDate = (date) => {
+    console.log(date);
+    setExcelToDate(date);
+  };
+
+  const handleDownloadExcelButtonClick = () => {
+    let state = compareExcelDates(excelFromDate, excelToDate);
+
+    try {
+      setDisplayDownloadExcelAlert(state);
+    } finally {
+      getExcelFile();
+    }
+  };
+
+  const getExcelFile = () => {
+    console.log('getExcelFile function called...');
+  };
+
+  const compareExcelDates = (from, to) => {
+    let fromDate = new Date(from).getTime();
+    let toDate = new Date(to).getTime();
+
+    let differenceInTime = toDate - fromDate;
+
+    console.log(differenceInTime);
+
+    if (differenceInTime >= 0) {
+      return false;
+    } else {
+      return true;
+    }
   };
 
   return (
@@ -783,12 +699,18 @@ function Dashboard(props) {
         </div>
         <Divider />
         <List>
-          {['Dashboard'].map((text, index) => (
-            <ListItem button key={text} selected={index === 0}>
+          {['Dashboard', 'Download Excel'].map((text, index) => (
+            <ListItem
+              button
+              key={text}
+              selected={index === 0}
+              onClick={() => {
+                handleSideMenuClick(index);
+              }}
+            >
               <ListItemIcon>
                 {index === 0 && <DashboardIcon />}
-                {index === 1 && <NotificationsIcon />}
-                {index === 2 && <AssessmentIcon />}
+                {index === 1 && <DescriptionIcon />}
               </ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
@@ -799,9 +721,9 @@ function Dashboard(props) {
       <main className={classes.content}>
         <Grid
           container
+          alignItems='center'
           spacing={4}
           style={{ paddingLeft: '.25rem', paddingRight: '2rem' }}
-          alignItems='center'
         >
           <Grid item>
             <span style={{ fontSize: '1.25rem' }}>Chhattisgarh</span>
@@ -848,12 +770,17 @@ function Dashboard(props) {
                   paddingLeft: '1rem',
                 }}
               >
-                <Grid container alignItems='center' spacing={1}>
+                <Grid
+                  container
+                  style={{ paddingTop: '.1rem' }}
+                  alignItems='center'
+                  spacing={2}
+                >
                   <Grid item>
                     <img
-                      src='/static/images/power-generation.png'
+                      src='/static/images/powerGeneration.png'
                       alt='power'
-                      style={{ width: 64, height: 64 }}
+                      style={{ width: 56, height: 56 }}
                     />
                   </Grid>
                   <Grid item>
@@ -862,7 +789,9 @@ function Dashboard(props) {
                     </Grid>
                     <Grid container justify='flex-end'>
                       <Grid item>
-                        <Typography color='primary'>100 KWH</Typography>
+                        <Typography color='primary'>
+                          {Number(cardsValues.day_generation).toFixed(2)} KWH
+                        </Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -878,14 +807,20 @@ function Dashboard(props) {
                   paddingRight: '1rem',
                   paddingBottom: '.5rem',
                   paddingLeft: '1rem',
+                  height: 'inherit',
                 }}
               >
-                <Grid container alignItems='center' spacing={1}>
+                <Grid
+                  container
+                  style={{ paddingTop: '.5rem' }}
+                  alignItems='center'
+                  spacing={1}
+                >
                   <Grid item>
                     <img
-                      src='/static/images/power-generation.png'
+                      src='/static/images/revenue.png'
                       alt='power'
-                      style={{ width: 64, height: 64 }}
+                      style={{ height: 44 }}
                     />
                   </Grid>
                   <Grid item>
@@ -894,7 +829,12 @@ function Dashboard(props) {
                     </Grid>
                     <Grid container justify='flex-end'>
                       <Grid item>
-                        <Typography color='primary'>100 KWH</Typography>
+                        <Typography color='primary'>
+                          ₹{' '}
+                          {getFormattedRevenue(
+                            cardsValues.day_generation * 6.46
+                          )}
+                        </Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -912,21 +852,28 @@ function Dashboard(props) {
                   paddingLeft: '1rem',
                 }}
               >
-                <Grid container alignItems='center' spacing={1}>
+                <Grid
+                  container
+                  style={{ paddingTop: '.25rem' }}
+                  alignItems='center'
+                  spacing={1}
+                >
                   <Grid item>
                     <img
-                      src='/static/images/power-generation.png'
+                      src='/static/images/peakPower.png'
                       alt='power'
-                      style={{ width: 64, height: 64 }}
+                      style={{ width: 52, height: 52 }}
                     />
                   </Grid>
                   <Grid item>
-                    <Grid container justify='flex-end'>
+                    <Grid container>
                       <Typography>Peak Power</Typography>
                     </Grid>
                     <Grid container justify='flex-end'>
                       <Grid item>
-                        <Typography color='primary'>100 KWH</Typography>
+                        <Typography color='primary'>
+                          {Number(cardsValues.peak_power).toFixed(2)} MW
+                        </Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -947,18 +894,20 @@ function Dashboard(props) {
                 <Grid container alignItems='center' spacing={1}>
                   <Grid item>
                     <img
-                      src='/static/images/power-generation.png'
+                      src='/static/images/plantPR.png'
                       alt='power'
-                      style={{ width: 64, height: 64 }}
+                      style={{ height: 60 }}
                     />
                   </Grid>
                   <Grid item>
-                    <Grid container justify='flex-end'>
+                    <Grid container>
                       <Typography>Plant PR</Typography>
                     </Grid>
                     <Grid container justify='flex-end'>
                       <Grid item>
-                        <Typography color='primary'>100 KWH</Typography>
+                        <Typography color='primary'>
+                          {Number(cardsValues.plant_pr).toFixed(2)}%
+                        </Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -976,21 +925,23 @@ function Dashboard(props) {
                   paddingLeft: '1rem',
                 }}
               >
-                <Grid container alignItems='center' spacing={1}>
+                <Grid container alignItems='center' spacing={2}>
                   <Grid item>
                     <img
-                      src='/static/images/power-generation.png'
+                      src='/static/images/gridAvailability.png'
                       alt='power'
-                      style={{ width: 64, height: 64 }}
+                      style={{ width: 60, height: 60 }}
                     />
                   </Grid>
                   <Grid item>
-                    <Grid container justify='flex-end'>
+                    <Grid container>
                       <Typography>Grid Availability</Typography>
                     </Grid>
                     <Grid container justify='flex-end'>
                       <Grid item>
-                        <Typography color='primary'>100 KWH</Typography>
+                        <Typography color='primary'>
+                          {Number(cardsValues.grid_availability).toFixed(0)}%
+                        </Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -1018,7 +969,7 @@ function Dashboard(props) {
                   color='textSecondary'
                   style={{ marginLeft: '0.75rem', marginBottom: '1rem' }}
                 >
-                  Total Export
+                  Power Generation
                 </Typography>
                 {/* <GaugeChart
                   id='gauge-chart1'
@@ -1133,6 +1084,7 @@ function Dashboard(props) {
               <CardContent style={{ width: '100%', height: '100%' }}>
                 <Typography
                   variant='h6'
+                  color='textSecondary'
                   style={{
                     marginLeft: '2rem',
                     marginTop: '.5rem',
@@ -1160,13 +1112,19 @@ function Dashboard(props) {
             paddingRight: '2.5rem',
           }}
         >
-          <Grid item xs={7}>
+          <Grid item xs={12}>
             <Grid
               container
               spacing={2}
               alignItems='center'
               style={{ marginBottom: '.5rem' }}
             >
+              <Grid item>
+                <Typography variant='h6' color='textSecondary'>
+                  Inverter Values
+                </Typography>
+              </Grid>
+              <Grid item className={classes.grow} />
               <Grid item>
                 <Typography style={{ marginLeft: '.25rem' }}>
                   Selected Block:{' '}
@@ -1185,23 +1143,90 @@ function Dashboard(props) {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item className={classes.grow}></Grid>
-              <Grid item>
+              {/* <Grid item>
                 <Button variant='outlined'>
                   <CSVLink
                     filename={'my-file.csv'}
                     style={{ textDecoration: 'none', color: 'inherit' }}
-                    data={graphDummyData}
+                    data={[]}
                   >
                     Download CSV
                   </CSVLink>
                 </Button>
-              </Grid>
+              </Grid> */}
             </Grid>
-            <BlockTable />
+            <BlockTable values={arrayOfObjects} />
           </Grid>
         </Grid>
       </main>
+
+      <noscript>Download Excel file modal</noscript>
+      <Modal
+        open={openDownloadExcelModal}
+        onClose={handleDownloadExcelModalClose}
+        aria-labelledby='simple-modal-title'
+        aria-describedby='simple-modal-description'
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          paddingTop: '12rem',
+        }}
+      >
+        <Card
+          className={classes.modalCardStyle}
+          style={{ textAlign: 'center', paddingBottom: '1.5rem' }}
+        >
+          <CardContent>
+            <Typography variant='h6' color='primary'>
+              Excel File
+            </Typography>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                style={{ width: '80%' }}
+                disableToolbar
+                variant='inline'
+                format='dd/MM/yyyy'
+                margin='normal'
+                id='from-date-picker-inline'
+                label='From'
+                value={excelFromDate}
+                onChange={handleExcelFromDate}
+                autoOk={true}
+              />
+              <KeyboardDatePicker
+                style={{ width: '80%' }}
+                disableToolbar
+                variant='inline'
+                format='dd/MM/yyyy'
+                margin='normal'
+                id='from-date-picker-inline'
+                label='To'
+                value={excelToDate}
+                onChange={handleExcelToDate}
+                autoOk={true}
+              />
+            </MuiPickersUtilsProvider>
+          </CardContent>
+          <Button
+            variant='outlined'
+            color='primary'
+            onClick={handleDownloadExcelButtonClick}
+          >
+            Download
+          </Button>
+          {displayDownloadExcelAlert && (
+            <div
+              style={{
+                marginTop: '1.25rem',
+              }}
+            >
+              <span style={{ color: '#ff9800', fontSize: '1rem' }}>
+                Select larger 'To' date.
+              </span>
+            </div>
+          )}
+        </Card>
+      </Modal>
     </div>
   );
 }
